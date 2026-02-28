@@ -72,8 +72,11 @@ function EditUnitInner() {
   }, [data, reset])
 
   const { mutate, isPending } = useMutation({
-    mutationFn: (values: FormValues) =>
-      unitsEndpoints.update(params.id, {
+    mutationFn: (values: FormValues) => {
+      if (!data?.data?.property_id) {
+        throw new Error('Missing property id for unit update')
+      }
+      return unitsEndpoints.update(params.id, {
         unit: {
           property_id: data.data.property_id,
           unit_number: values.unit_number,
@@ -83,7 +86,8 @@ function EditUnitInner() {
           monthly_rent_cents: toCents(Number(values.monthly_rent_ghs)),
           rent_cents: toCents(Number(values.monthly_rent_ghs)),
         },
-      }),
+      })
+    },
     onSuccess: () => {
       toast.success('Unit updated')
       queryClient.invalidateQueries({ queryKey: ['units'] })

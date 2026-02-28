@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -34,14 +35,16 @@ function EditTenantInner() {
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['tenants', params.id],
     queryFn: () => tenantsEndpoints.get(params.id),
-    onSuccess: (res) => {
-      reset({
-        full_name: res.data.full_name ?? `${res.data.first_name ?? ''} ${res.data.last_name ?? ''}`.trim(),
-        phone: res.data.phone,
-        status: res.data.status,
-      })
-    },
   })
+
+  useEffect(() => {
+    if (!data?.data) return
+    reset({
+      full_name: data.data.full_name ?? `${data.data.first_name ?? ''} ${data.data.last_name ?? ''}`.trim(),
+      phone: data.data.phone,
+      status: data.data.status,
+    })
+  }, [data, reset])
 
   const { mutate, isPending } = useMutation({
     mutationFn: (values: FormValues) => tenantsEndpoints.update(params.id, {

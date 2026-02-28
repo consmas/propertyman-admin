@@ -25,10 +25,10 @@ export function usePropertyList() {
         data.map(p => ({
           id: p.id,
           name: p.name,
-          address: p.address,
+          address: p.address ?? p.address_line_1 ?? '',
           total_units: p.total_units,
           occupied_units: p.occupied_units,
-          status: p.status,
+          status: p.status ?? (p.active === false ? 'inactive' : 'active'),
         }))
       )
       return data

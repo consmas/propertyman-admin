@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { usePropertyStore } from '@/store/property'
 import { ArrowLeft, Building2, Home, Users } from 'lucide-react'
@@ -30,11 +30,12 @@ export default function AppPropertyDetailPage({
   const { data, isLoading } = useQuery({
     queryKey: ['app-property', propertyId],
     queryFn: () => propertiesEndpoints.get(propertyId),
-    onSuccess: (res) => {
-      const next = res.data?.status ?? (res.data?.active === false ? 'inactive' : 'active')
-      setActiveStatus(next === 'inactive' ? 'inactive' : 'active')
-    },
   })
+
+  useEffect(() => {
+    const next = data?.data?.status ?? (data?.data?.active === false ? 'inactive' : 'active')
+    setActiveStatus(next === 'inactive' ? 'inactive' : 'active')
+  }, [data])
 
   const property: ApiProperty | undefined = data?.data
   const derivedStatus: 'active' | 'inactive' | 'maintenance' =

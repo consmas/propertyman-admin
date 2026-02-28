@@ -301,7 +301,7 @@ export interface CreateLeaseRequest {
 }
 
 export interface UpdateLeaseRequest {
-  lease: Partial<CreateLeaseRequest['lease']> & {
+  lease: Omit<Partial<CreateLeaseRequest['lease']>, 'status'> & {
     status?: 'active' | 'pending' | 'expired' | 'terminated'
   }
 }
