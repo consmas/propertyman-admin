@@ -1,26 +1,164 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Brand */
+  --brand-50: #eef2ff;
+  --brand-100: #e0e7ff;
+  --brand-200: #c7d2fe;
+  --brand-300: #a5b4fc;
+  --brand-400: #818cf8;
+  --brand-500: #6366f1;
+  --brand-600: #4f46e5;
+  --brand-700: #4338ca;
+  --brand-800: #3730a3;
+  --brand-900: #312e81;
+
+  /* Neutral */
+  --neutral-0: #ffffff;
+  --neutral-25: #fcfcfd;
+  --neutral-50: #f8fafc;
+  --neutral-100: #f1f5f9;
+  --neutral-200: #e2e8f0;
+  --neutral-300: #cbd5e1;
+  --neutral-400: #94a3b8;
+  --neutral-500: #64748b;
+  --neutral-600: #475569;
+  --neutral-700: #334155;
+  --neutral-800: #1e293b;
+  --neutral-900: #0f172a;
+  --neutral-950: #020617;
+
+  /* Semantic */
+  --success-50: #ecfdf5;
+  --success-500: #10b981;
+  --success-700: #047857;
+  --warning-50: #fffbeb;
+  --warning-500: #f59e0b;
+  --warning-700: #b45309;
+  --error-50: #fef2f2;
+  --error-500: #ef4444;
+  --error-700: #b91c1c;
+  --info-50: #eff6ff;
+  --info-500: #3b82f6;
+  --info-700: #1d4ed8;
+
+  /* Surfaces */
+  --surface-primary: var(--neutral-0);
+  --surface-secondary: var(--neutral-50);
+  --surface-tertiary: var(--neutral-100);
+  --surface-sidebar: var(--neutral-900);
+  --surface-overlay: rgb(15 23 42 / 0.6);
+
+  /* Text */
+  --text-primary: var(--neutral-900);
+  --text-secondary: var(--neutral-600);
+  --text-tertiary: var(--neutral-400);
+  --text-inverse: var(--neutral-0);
+  --text-brand: var(--brand-600);
+
+  /* Borders / focus */
+  --border-default: var(--neutral-200);
+  --border-strong: var(--neutral-300);
+  --border-focus: var(--brand-500);
+
+  /* App root */
+  --background: var(--surface-secondary);
+  --foreground: var(--text-primary);
+}
+
+:root[data-theme="dark"] {
+  /* Neutral remap */
+  --neutral-0: #0b1220;
+  --neutral-25: #111827;
+  --neutral-50: #172033;
+  --neutral-100: #1f2a3c;
+  --neutral-200: #2b3a53;
+  --neutral-300: #3b4d69;
+  --neutral-400: #64748b;
+  --neutral-500: #94a3b8;
+  --neutral-600: #cbd5e1;
+  --neutral-700: #d8e2ef;
+  --neutral-800: #e2e8f0;
+  --neutral-900: #f1f5f9;
+  --neutral-950: #f8fafc;
+
+  /* Semantic tuning */
+  --success-50: #06271b;
+  --success-500: #22c55e;
+  --success-700: #86efac;
+  --warning-50: #2a1b05;
+  --warning-500: #f59e0b;
+  --warning-700: #fcd34d;
+  --error-50: #2a1010;
+  --error-500: #f87171;
+  --error-700: #fecaca;
+  --info-50: #0e1f3d;
+  --info-500: #60a5fa;
+  --info-700: #bfdbfe;
+
+  /* Surfaces / text */
+  --surface-primary: #0f172a;
+  --surface-secondary: #0b1220;
+  --surface-tertiary: #172033;
+  --surface-sidebar: #020617;
+  --surface-overlay: rgb(2 6 23 / 0.72);
+
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --text-inverse: #020617;
+  --text-brand: #a5b4fc;
+
+  --border-default: #2b3a53;
+  --border-strong: #3b4d69;
+  --border-focus: #818cf8;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-dm-sans);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-dm-sans, system-ui, -apple-system, sans-serif);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[role="button"]:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--border-focus);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--neutral-300) transparent;
+}
+
+*::-webkit-scrollbar { width: 6px; height: 6px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background-color: var(--neutral-300); border-radius: 3px; }
+
+@media print {
+  aside, header { display: none !important; }
+  body { background: white; }
 }

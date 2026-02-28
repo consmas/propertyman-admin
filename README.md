@@ -1,36 +1,132 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PropertyManager Admin Dashboard
 
-## Getting Started
+Property management admin frontend for `PropertyManagerAPI` (`/api/v1`) built with Next.js App Router, TypeScript, and Tailwind CSS.
 
-First, run the development server:
+## Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 16 (App Router) + TypeScript |
+| Styling | Tailwind CSS v4 |
+| Server state | TanStack Query v5 |
+| Client state | Zustand v5 |
+| Forms | React Hook Form + Zod |
+| HTTP client | Axios (with refresh interceptor) |
+| Charts | Recharts |
+| UI primitives | Radix UI + custom components |
+| Notifications | Sonner |
+
+## Features
+
+- **Authentication** — JWT login, auto-refresh on 401, secure session persistence
+- **Multi-property** — Property switcher scopes all data to the selected property
+- **Dashboard** — Live KPI cards and recent operational activity (no production fake data)
+- **Properties** — List + detail view with occupancy metrics
+- **Users & Memberships** — Owner/admin CRUD and assignment screens
+- **Units** — Property-scoped list/detail/create/edit
+- **Tenants** — Property-scoped list/detail/create/edit
+- **Leases** — List/create/detail/edit with 3/6/12 month support
+- **Rent Installments** — List and detail
+- **Invoices** — List/create/detail/edit + item management
+- **Payments** — List/create/detail
+- **Payment Allocations** — List and detail
+- **Meter Readings** — List/detail/create/edit
+- **Pump Topups** — List/detail/create/edit
+- **Maintenance** — Priority/aging indicators, status workflow, create/update requests
+- **Audit Logs** — List and detail
+- **Billing** — Water billing run action page
+- **Role-based access** — Middleware + UI guard for `owner`, `admin`, `property_manager`, `accountant`, `caretaker`, `tenant`
+
+## Setup
 
 ```bash
+# 1. Install dependencies
+npm install
+
+# 2. Configure environment
+cp .env.example .env.local
+# Edit .env.local and set NEXT_PUBLIC_API_URL
+
+# 3. Start dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) — app redirects to `/app/dashboard`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable | Description | Default |
+|---|---|---|
+| `NEXT_PUBLIC_API_BASE_URL` | API host (client app appends `/api/v1`) | `https://propertyapi.rohodev.com` |
+| `NEXT_PUBLIC_APP_NAME` | App display name | `PropertyManager Admin` |
+| `NEXT_PUBLIC_DEFAULT_CURRENCY` | Currency code | `GHS` |
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/
+│   ├── (auth)/login/          # Login page
+│   ├── app/                   # Protected app routes (/app/*)
+│   │   ├── dashboard/
+│   │   ├── users/
+│   │   ├── memberships/
+│   │   ├── properties/
+│   │   ├── units/
+│   │   ├── tenants/
+│   │   ├── leases/
+│   │   ├── rent-installments/
+│   │   ├── invoices/
+│   │   ├── payments/
+│   │   ├── payment-allocations/
+│   │   ├── meter-readings/
+│   │   ├── pump-topups/
+│   │   ├── maintenance/
+│   │   ├── audit-logs/
+│   │   └── billing/water/
+│   ├── layout.tsx             # Root layout (Providers)
+│   └── page.tsx               # Redirects to /app/dashboard
+├── components/
+│   ├── ui/                    # Radix-based primitives
+│   ├── shared/                # DataTable, KpiCard, StatusBadge, etc.
+│   └── layout/                # Sidebar, TopNav, PropertySwitcher
+├── hooks/                     # use-auth, use-property
+├── lib/
+│   ├── api/                   # Typed API modules (auth, properties, …)
+│   ├── jsonapi.ts             # JSON:API response parsers
+│   ├── utils.ts               # cn, formatCurrency, formatDate, …
+│   └── validations/           # Zod schemas
+├── providers/                 # QueryClient + Toaster
+├── store/                     # Zustand (auth, property)
+├── types/                     # TypeScript contracts
+└── proxy.ts                   # Route protection + role guards
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Demo Accounts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Configure your backend seed with these roles:
 
-## Deploy on Vercel
+| Email | Role |
+|---|---|
+| owner@demo.com | owner |
+| manager@demo.com | property_manager |
+| accountant@demo.com | accountant |
+| caretaker@demo.com | caretaker |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## API Contract
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+All API calls target `NEXT_PUBLIC_API_BASE_URL` and append `/api/v1`. The client handles `{ data }` success payloads and surfaces JSON:API-style `errors[].detail`.
+
+### Token Refresh Flow
+
+1. Request fails with 401
+2. Interceptor pauses queue and calls `POST /auth/refresh`
+3. On success — new token applied, queued requests retried
+4. On failure — localStorage cleared, user redirected to `/login`
+
+## Tests
+
+```bash
+# After adding vitest in your environment:
+npx vitest run tests/auth-guard.test.ts tests/crud-flow.test.ts
+```
