@@ -10,6 +10,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { ArrowLeft } from 'lucide-react'
 import { propertyMembershipsEndpoints } from '@/lib/api/endpoints/property-memberships'
+import { usersEndpoints } from '@/lib/api/endpoints/users'
+import { propertiesEndpoints } from '@/lib/api/endpoints/properties'
 import { getErrorMessage } from '@/lib/errors'
 import { RoleGate } from '@/components/shared/role-gate'
 import { PageHeader } from '@/components/shared/page-header'
@@ -25,6 +27,10 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>
 
+function getUserLabel(user: { full_name?: string; email?: string }) {
+  return user.full_name || user.email || 'Unknown user'
+}
+
 function MembershipEditInner() {
   const params = useParams<{ id: string }>()
   const router = useRouter()
@@ -36,6 +42,14 @@ function MembershipEditInner() {
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['memberships', params.id],
     queryFn: () => propertyMembershipsEndpoints.get(params.id),
+  })
+  const usersQuery = useQuery({
+    queryKey: ['memberships-form-users'],
+    queryFn: () => usersEndpoints.list({ per_page: 200 }),
+  })
+  const propertiesQuery = useQuery({
+    queryKey: ['memberships-form-properties'],
+    queryFn: () => propertiesEndpoints.list({ per_page: 200 }),
   })
 
   useEffect(() => {
@@ -56,14 +70,20 @@ function MembershipEditInner() {
 
   if (isLoading) return <PageLoader />
   if (isError || !data?.data) return <ErrorState message="Failed to load membership" onRetry={() => refetch()} />
+  const user = (usersQuery.data?.data ?? []).find((u) => u.id === data.data.user_id)
+  const property = (propertiesQuery.data?.data ?? []).find((p) => p.id === data.data.property_id)
 
   return (
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center gap-3"><Link href="/app/memberships"><Button variant="ghost" size="icon"><ArrowLeft className="h-4 w-4" /></Button></Link><PageHeader title="Edit Membership" description={data.data.id} /></div>
       <form onSubmit={handleSubmit((values) => mutate(values))} className="space-y-4">
         <Card className="p-6 space-y-4">
-          <p className="text-xs text-gray-500">User: <span className="font-mono">{data.data.user_id}</span></p>
-          <p className="text-xs text-gray-500">Property: <span className="font-mono">{data.data.property_id}</span></p>
+          <p className="text-xs text-gray-500">
+            User: <span className="font-medium text-gray-700">{user ? getUserLabel(user) : data.data.user_id}</span>
+          </p>
+          <p className="text-xs text-gray-500">
+            Property: <span className="font-medium text-gray-700">{property?.name ?? data.data.property_id}</span>
+          </p>
           <select {...register('role')} className="h-9 w-full rounded-md border px-3 text-sm">
             <option value="admin">Admin</option>
             <option value="property_manager">Property Manager</option>
