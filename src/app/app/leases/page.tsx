@@ -22,7 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { formatCents, formatDate } from '@/lib/utils'
+import { formatCurrency, formatDate } from '@/lib/utils'
 import { ApiError } from '@/types'
 import type { ApiLease } from '@/types/api'
 
@@ -85,9 +85,9 @@ export default function AppLeasesPage() {
       ),
     },
     {
-      key: 'rent_cents',
+      key: 'rent',
       header: 'Monthly Rent',
-      render: (row) => <span className="font-medium">{formatCents(row.rent_cents)}</span>,
+      render: (row) => <span className="font-medium">{formatCurrency(row.rent)}</span>,
     },
     {
       key: 'paid_through_date',

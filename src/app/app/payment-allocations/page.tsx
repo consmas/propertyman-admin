@@ -8,13 +8,13 @@ import { RoleGate } from '@/components/shared/role-gate'
 import { PageHeader } from '@/components/shared/page-header'
 import { DataTable, type Column } from '@/components/shared/data-table'
 import { ErrorState } from '@/components/shared/error-state'
-import { formatCents, formatDate } from '@/lib/utils'
+import { formatCurrency, formatDate } from '@/lib/utils'
 import type { ApiPaymentAllocation } from '@/types/api'
 
 const columns: Column<ApiPaymentAllocation>[] = [
   { key: 'payment_id', header: 'Payment', render: (r) => <span className="font-mono text-xs">{r.payment_id}</span> },
   { key: 'invoice_id', header: 'Invoice', render: (r) => <span className="font-mono text-xs">{r.invoice_id}</span> },
-  { key: 'amount_cents', header: 'Amount', render: (r) => formatCents(r.amount_cents) },
+  { key: 'amount', header: 'Amount', render: (r) => formatCurrency(r.amount) },
   { key: 'allocated_at', header: 'Allocated', render: (r) => formatDate(r.allocated_at) },
 ]
 

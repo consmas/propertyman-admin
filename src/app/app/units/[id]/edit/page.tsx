@@ -17,7 +17,6 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ErrorState } from '@/components/shared/error-state'
 import { PageLoader } from '@/components/shared/loading-spinner'
-import { toCents } from '@/lib/utils'
 
 const UNIT_TYPE_OPTIONS = [
   { value: 'chamber_and_hall_self_contain', label: 'Chamber & Hall Self Contain' },
@@ -60,13 +59,12 @@ function EditUnitInner() {
 
   useEffect(() => {
     if (data?.data) {
-      const rentCents = data.data.monthly_rent_cents ?? data.data.rent_cents ?? 0
       reset({
         unit_number: data.data.unit_number,
         name: data.data.name ?? `Unit ${data.data.unit_number}`,
         unit_type: (data.data.unit_type as FormValues['unit_type']) ?? 'one_bedroom_self_contain',
         status: normalizeUnitStatus(data.data.status),
-        monthly_rent_ghs: (rentCents / 100).toFixed(2),
+        monthly_rent_ghs: (data.data.monthly_rent ?? 0).toFixed(2),
       })
     }
   }, [data, reset])
@@ -83,8 +81,7 @@ function EditUnitInner() {
           name: values.name,
           unit_type: values.unit_type,
           status: values.status,
-          monthly_rent_cents: toCents(Number(values.monthly_rent_ghs)),
-          rent_cents: toCents(Number(values.monthly_rent_ghs)),
+          monthly_rent: Number(values.monthly_rent_ghs),
         },
       })
     },

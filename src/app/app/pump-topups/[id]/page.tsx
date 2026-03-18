@@ -10,7 +10,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { PageLoader } from '@/components/shared/loading-spinner'
 import { ErrorState } from '@/components/shared/error-state'
-import { formatCents, formatDate } from '@/lib/utils'
+import { formatCurrency, formatDate } from '@/lib/utils'
 
 function PumpTopupDetailInner() {
   const params = useParams<{ id: string }>()
@@ -23,9 +23,9 @@ function PumpTopupDetailInner() {
     <div className="space-y-6">
       <PageHeader title="Pump Topup" description={row.id} actions={<Link href={`/app/pump-topups/${row.id}/edit`}><Button>Edit</Button></Link>} />
       <Card className="p-6 space-y-2 text-sm">
-        <p>Date: {formatDate(row.topup_on)}</p>
-        <p>Volume: {row.volume_liters}L</p>
-        <p>Amount: {formatCents(row.amount_cents)}</p>
+        <p>Date: {formatDate(row.topup_date)}</p>
+        <p>Volume: {row.quantity_liters}L</p>
+        <p>Amount: {formatCurrency(row.cost)}</p>
         <p>Vendor: {row.vendor_name ?? '—'}</p>
       </Card>
     </div>

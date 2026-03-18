@@ -10,7 +10,7 @@ import { KpiCard } from '@/components/shared/kpi-card'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { formatCents, formatDate, humanizeStatus } from '@/lib/utils'
+import { formatCurrency, formatDate, humanizeStatus } from '@/lib/utils'
 import type { ApiPayment } from '@/types/api'
 
 function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
@@ -62,9 +62,9 @@ export default function PaymentDetailPage({
           title="Payment"
           description={`Ref: ${payment.reference}`}
           actions={
-            payment.unallocated_cents > 0 && (
+            payment.unallocated > 0 && (
               <span className="inline-flex items-center rounded-md bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
-                {formatCents(payment.unallocated_cents)} unallocated
+                {formatCurrency(payment.unallocated)} unallocated
               </span>
             )
           }
@@ -75,18 +75,18 @@ export default function PaymentDetailPage({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <KpiCard
           title="Amount Received"
-          value={formatCents(payment.amount_cents)}
+          value={formatCurrency(payment.amount)}
           icon={DollarSign}
           iconBg="bg-green-50"
           iconColor="text-green-600"
         />
         <KpiCard
           title="Unallocated Balance"
-          value={formatCents(payment.unallocated_cents)}
-          subtitle={payment.unallocated_cents > 0 ? 'Pending allocation' : 'Fully allocated'}
+          value={formatCurrency(payment.unallocated)}
+          subtitle={payment.unallocated > 0 ? 'Pending allocation' : 'Fully allocated'}
           icon={CreditCard}
-          iconBg={payment.unallocated_cents > 0 ? 'bg-amber-50' : 'bg-gray-50'}
-          iconColor={payment.unallocated_cents > 0 ? 'text-amber-600' : 'text-gray-400'}
+          iconBg={payment.unallocated > 0 ? 'bg-amber-50' : 'bg-gray-50'}
+          iconColor={payment.unallocated > 0 ? 'text-amber-600' : 'text-gray-400'}
         />
       </div>
 
@@ -123,7 +123,7 @@ export default function PaymentDetailPage({
                     <p className="text-xs text-gray-500 font-mono">{alloc.invoice_id}</p>
                   </div>
                   <span className="text-sm font-semibold text-gray-900 tabular-nums">
-                    {formatCents(alloc.amount_cents)}
+                    {formatCurrency(alloc.amount)}
                   </span>
                 </div>
               ))}

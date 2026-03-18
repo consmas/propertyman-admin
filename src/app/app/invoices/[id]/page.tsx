@@ -17,7 +17,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ErrorState } from '@/components/shared/error-state'
 import { PageLoader } from '@/components/shared/loading-spinner'
-import { formatCents, formatDate } from '@/lib/utils'
+import { formatCurrency, formatDate } from '@/lib/utils'
 
 const itemSchema = z.object({
   description: z.string().min(1),
@@ -45,7 +45,7 @@ function InvoiceDetailInner() {
         invoice_item: {
           description: values.description,
           quantity: values.quantity,
-          unit_price_cents: Math.round(values.unit_price * 100),
+          unit_amount: values.unit_price,
         },
       }),
     onSuccess: () => {
@@ -61,13 +61,13 @@ function InvoiceDetailInner() {
       id: string
       description: string
       quantity: number
-      unit_price_cents: number
+      unit_amount: number
     }) =>
       invoiceItemsEndpoints.update(payload.id, {
         invoice_item: {
           description: payload.description,
           quantity: payload.quantity,
-          unit_price_cents: payload.unit_price_cents,
+          unit_amount: payload.unit_amount,
         },
       }),
     onSuccess: () => {
@@ -90,17 +90,17 @@ function InvoiceDetailInner() {
   if (invoiceQuery.isError || !invoiceQuery.data?.data) return <ErrorState message="Failed to load invoice" onRetry={() => invoiceQuery.refetch()} />
 
   const invoice = invoiceQuery.data.data
-  const items = (invoice as unknown as { items?: Array<{ id: string; description: string; quantity: number; unit_price_cents: number; amount_cents: number }> }).items ?? []
+  const items = (invoice as unknown as { items?: Array<{ id: string; description: string; quantity: number; unit_amount: number; line_total: number }> }).items ?? []
 
   return (
     <div className="space-y-6">
       <PageHeader title={`Invoice ${invoice.invoice_number}`} description={`${invoice.invoice_type} • ${invoice.status}`} actions={<Link href={`/app/invoices/${invoice.id}/edit`}><Button>Edit</Button></Link>} />
 
       <Card className="p-6 grid grid-cols-1 gap-2 text-sm md:grid-cols-2">
-        <p>Issued: {formatDate(invoice.issued_on)}</p>
-        <p>Due: {formatDate(invoice.due_on)}</p>
-        <p>Total: {formatCents(invoice.amount_cents)}</p>
-        <p>Balance: {formatCents(invoice.balance_cents)}</p>
+        <p>Issued: {formatDate(invoice.issue_date)}</p>
+        <p>Due: {formatDate(invoice.due_date)}</p>
+        <p>Total: {formatCurrency(invoice.total)}</p>
+        <p>Balance: {formatCurrency(invoice.balance)}</p>
       </Card>
 
       <Card className="p-6 space-y-4">
@@ -109,16 +109,16 @@ function InvoiceDetailInner() {
           {items.length === 0 && <p className="text-sm text-gray-500">No items yet.</p>}
           {items.map((item) => (
             <div key={item.id} className="flex items-center justify-between rounded border p-2 text-sm">
-              <div><p>{item.description}</p><p className="text-xs text-gray-500">{item.quantity} × {formatCents(item.unit_price_cents)}</p></div>
+              <div><p>{item.description}</p><p className="text-xs text-gray-500">{item.quantity} × {formatCurrency(item.unit_amount)}</p></div>
               <div className="flex items-center gap-2">
-                <p className="font-medium">{formatCents(item.amount_cents)}</p>
+                <p className="font-medium">{formatCurrency(item.line_total)}</p>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => {
                     const description = window.prompt('Description', item.description) ?? item.description
                     const quantityInput = window.prompt('Quantity', String(item.quantity))
-                    const priceInput = window.prompt('Unit price', String(item.unit_price_cents / 100))
+                    const priceInput = window.prompt('Unit price', String(item.unit_amount))
                     const quantity = Number(quantityInput)
                     const unitPrice = Number(priceInput)
                     if (!Number.isFinite(quantity) || quantity <= 0) return
@@ -127,7 +127,7 @@ function InvoiceDetailInner() {
                       id: item.id,
                       description,
                       quantity,
-                      unit_price_cents: Math.round(unitPrice * 100),
+                      unit_amount: unitPrice,
                     })
                   }}
                   loading={updateItem.isPending}

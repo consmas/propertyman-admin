@@ -12,7 +12,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ErrorState } from '@/components/shared/error-state'
 import { PageLoader } from '@/components/shared/loading-spinner'
-import { formatCents } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 
 function TenantDetailInner() {
   const params = useParams<{ id: string }>()
@@ -45,7 +45,7 @@ function TenantDetailInner() {
           {assignedUnit ? `${assignedUnit.unit_number}${assignedUnit.name ? ` - ${assignedUnit.name}` : ''}` : 'Unassigned'}
         </p>
         <p><span className="text-gray-500">Status:</span> {tenant.status}</p>
-        <p><span className="text-gray-500">Outstanding:</span> {formatCents(tenant.outstanding_cents)}</p>
+        <p><span className="text-gray-500">Outstanding:</span> {formatCurrency(tenant.outstanding)}</p>
       </Card>
     </div>
   )

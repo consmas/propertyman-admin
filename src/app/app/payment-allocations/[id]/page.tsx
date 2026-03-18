@@ -8,7 +8,7 @@ import { PageHeader } from '@/components/shared/page-header'
 import { Card } from '@/components/ui/card'
 import { PageLoader } from '@/components/shared/loading-spinner'
 import { ErrorState } from '@/components/shared/error-state'
-import { formatCents, formatDate } from '@/lib/utils'
+import { formatCurrency, formatDate } from '@/lib/utils'
 
 function AllocationDetailInner() {
   const params = useParams<{ id: string }>()
@@ -23,7 +23,7 @@ function AllocationDetailInner() {
       <Card className="p-6 space-y-2 text-sm">
         <p>Payment: <span className="font-mono">{allocation.payment_id}</span></p>
         <p>Invoice: <span className="font-mono">{allocation.invoice_id}</span></p>
-        <p>Amount: {formatCents(allocation.amount_cents)}</p>
+        <p>Amount: {formatCurrency(allocation.amount)}</p>
         <p>Allocated at: {formatDate(allocation.allocated_at)}</p>
       </Card>
     </div>

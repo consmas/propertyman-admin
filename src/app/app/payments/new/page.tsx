@@ -19,7 +19,6 @@ import { Card } from '@/components/ui/card'
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
-import { toCents } from '@/lib/utils'
 import type { PaymentMethod } from '@/types/api'
 
 const schema = z.object({
@@ -78,7 +77,7 @@ export default function NewPaymentPage() {
   })
 
   const openInvoices = (openInvoicesQuery.data?.data ?? []).filter((inv) =>
-    ['issued', 'partial', 'overdue'].includes(inv.status) && inv.balance_cents > 0
+    ['issued', 'partial', 'overdue'].includes(inv.status) && inv.balance > 0
   )
   const openInvoiceCount = openInvoices.length
 
@@ -105,7 +104,7 @@ export default function NewPaymentPage() {
         tenant_id: values.tenant_id,
         reference: values.reference,
         payment_method: values.payment_method,
-        amount_cents: toCents(values.amount_ghs),
+        amount: values.amount_ghs,
         paid_at: new Date(values.paid_at).toISOString(),
         notes: values.notes || undefined,
       },
@@ -225,7 +224,7 @@ export default function NewPaymentPage() {
         <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 text-sm text-blue-700">
           <p>
             Backend allocates to the tenant&apos;s oldest unpaid invoices first.
-            Any excess remains in <code>payment.unallocated_cents</code>.
+            Any excess remains in <code>payment.unallocated</code>.
           </p>
           <p className="mt-1">
             For full-term lease payments, when the term invoice/installment is fully covered,

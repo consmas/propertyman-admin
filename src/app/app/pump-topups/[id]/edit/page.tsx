@@ -17,12 +17,11 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { PageLoader } from '@/components/shared/loading-spinner'
 import { ErrorState } from '@/components/shared/error-state'
-import { toCents } from '@/lib/utils'
 
 const schema = z.object({
-  topup_on: z.string().min(1),
-  volume_liters: z.coerce.number().positive(),
-  amount: z.coerce.number().positive(),
+  topup_date: z.string().min(1),
+  quantity_liters: z.coerce.number().positive(),
+  cost: z.coerce.number().positive(),
   vendor_name: z.string().optional(),
   notes: z.string().optional(),
 })
@@ -38,12 +37,12 @@ function EditPumpTopupInner() {
 
   useEffect(() => {
     if (query.data?.data) {
-      reset({ topup_on: query.data.data.topup_on, volume_liters: query.data.data.volume_liters, amount: query.data.data.amount_cents / 100, vendor_name: query.data.data.vendor_name ?? '', notes: query.data.data.notes ?? '' })
+      reset({ topup_date: query.data.data.topup_date, quantity_liters: query.data.data.quantity_liters, cost: query.data.data.cost, vendor_name: query.data.data.vendor_name ?? '', notes: query.data.data.notes ?? '' })
     }
   }, [query.data, reset])
 
   const update = useMutation({
-    mutationFn: (values: FormValues) => pumpTopupsEndpoints.update(params.id, { pump_topup: { topup_on: values.topup_on, volume_liters: values.volume_liters, amount_cents: toCents(values.amount), vendor_name: values.vendor_name || undefined, notes: values.notes || undefined } }),
+    mutationFn: (values: FormValues) => pumpTopupsEndpoints.update(params.id, { pump_topup: { topup_date: values.topup_date, quantity_liters: values.quantity_liters, cost: values.cost, vendor_name: values.vendor_name || undefined, notes: values.notes || undefined } }),
     onSuccess: () => {
       toast.success('Pump topup updated')
       queryClient.invalidateQueries({ queryKey: ['pump_topups'] })
@@ -60,9 +59,9 @@ function EditPumpTopupInner() {
       <div className="flex items-center gap-3"><Link href={`/app/pump-topups/${params.id}`}><Button variant="ghost" size="icon"><ArrowLeft className="h-4 w-4" /></Button></Link><PageHeader title="Edit Pump Topup" description={params.id} /></div>
       <form onSubmit={handleSubmit((values) => update.mutate(values))} className="space-y-4">
         <Card className="p-6 space-y-4">
-          <input {...register('topup_on')} type="date" className="h-9 w-full rounded-md border px-3 text-sm" />
-          <input {...register('volume_liters')} type="number" step="0.001" className="h-9 w-full rounded-md border px-3 text-sm" />
-          <input {...register('amount')} type="number" step="0.01" className="h-9 w-full rounded-md border px-3 text-sm" />
+          <input {...register('topup_date')} type="date" className="h-9 w-full rounded-md border px-3 text-sm" />
+          <input {...register('quantity_liters')} type="number" step="0.001" className="h-9 w-full rounded-md border px-3 text-sm" />
+          <input {...register('cost')} type="number" step="0.01" className="h-9 w-full rounded-md border px-3 text-sm" />
           <input {...register('vendor_name')} className="h-9 w-full rounded-md border px-3 text-sm" />
           <textarea {...register('notes')} rows={3} className="w-full rounded-md border px-3 py-2 text-sm" />
           {errors.root?.server && <p className="text-sm text-red-600">{errors.root.server.message}</p>}

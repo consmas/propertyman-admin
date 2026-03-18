@@ -12,18 +12,16 @@ import { PageHeader } from '@/components/shared/page-header'
 import { DataTable, type Column } from '@/components/shared/data-table'
 import { ErrorState } from '@/components/shared/error-state'
 import { Button } from '@/components/ui/button'
-import { formatCents } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 import type { ApiUnit } from '@/types/api'
 
 const columns: Column<ApiUnit>[] = [
   { key: 'unit_number', header: 'Unit' },
   { key: 'status', header: 'Status' },
-  { key: 'bedrooms', header: 'Beds' },
-  { key: 'bathrooms', header: 'Baths' },
   {
-    key: 'rent_cents',
+    key: 'monthly_rent',
     header: 'Rent',
-    render: (row) => formatCents(row.monthly_rent_cents ?? row.rent_cents ?? 0),
+    render: (row) => formatCurrency(row.monthly_rent ?? 0),
   },
 ]
 

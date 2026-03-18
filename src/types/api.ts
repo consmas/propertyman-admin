@@ -203,12 +203,7 @@ export interface ApiUnit {
   unit_number: string
   name?: string
   unit_type?: string
-  floor?: number | null
-  bedrooms?: number
-  bathrooms?: number
-  area_sqft?: number | null
-  monthly_rent_cents?: number
-  rent_cents?: number
+  monthly_rent?: number
   status: UnitStatus
   notes?: string
   created_at: string
@@ -227,12 +222,7 @@ export interface CreateUnitRequest {
     name?: string
     unit_type?: string
     status?: ApiUnit['status']
-    monthly_rent_cents?: number
-    floor?: number | null
-    bedrooms?: number
-    bathrooms?: number
-    area_sqft?: number | null
-    rent_cents?: number
+    monthly_rent?: number
     notes?: string
   }
 }
@@ -254,7 +244,7 @@ export interface ApiTenant {
   phone: string
   national_id?: string
   status: 'active' | 'inactive' | 'archived'
-  outstanding_cents: number
+  outstanding: number
   created_at: string
   updated_at: string
 }
@@ -295,8 +285,8 @@ export interface CreateLeaseRequest {
     end_date: string
     plan_months: LeasePlanMonths
     status: 'active' | 'pending'
-    rent_cents: number
-    security_deposit_cents: number
+    rent: number
+    security_deposit: number
   }
 }
 
@@ -322,8 +312,8 @@ export interface ApiLease {
   end_date: string
   plan_months: LeasePlanMonths
   status: 'active' | 'pending' | 'expired' | 'terminated'
-  rent_cents: number
-  security_deposit_cents: number
+  rent: number
+  security_deposit: number
   paid_through_date?: string
   created_at: string
   updated_at: string
@@ -336,8 +326,7 @@ export interface ApiRentInstallment {
   lease_id: UUID
   invoice_id?: UUID
   due_date: string
-  amount_cents: number
-  balance_cents: number
+  amount: number
   status: 'pending' | 'paid' | 'overdue' | 'partial'
   paid_at?: string
   created_at: string
@@ -363,11 +352,10 @@ export interface ApiInvoice {
   invoice_number: string
   invoice_type: InvoiceType
   status: InvoiceStatus
-  amount_cents: number
-  amount_paid_cents: number
-  balance_cents: number
-  issued_on: string
-  due_on: string
+  total: number
+  balance: number
+  issue_date: string
+  due_date: string
   notes?: string
   created_at: string
   updated_at: string
@@ -388,8 +376,8 @@ export interface CreateInvoiceRequest {
     unit_id?: UUID
     lease_id?: UUID
     invoice_type: InvoiceType
-    issued_on: string
-    due_on: string
+    issue_date: string
+    due_date: string
     notes?: string
   }
 }
@@ -407,8 +395,8 @@ export interface ApiInvoiceItem {
   invoice_id: UUID
   description: string
   quantity: number
-  unit_price_cents: number
-  amount_cents: number
+  unit_amount: number
+  line_total: number
   created_at: string
   updated_at: string
 }
@@ -417,7 +405,7 @@ export interface CreateInvoiceItemRequest {
   invoice_item: {
     description: string
     quantity: number
-    unit_price_cents: number
+    unit_amount: number
   }
 }
 
@@ -432,7 +420,7 @@ export type PaymentMethod = 'cash' | 'bank_transfer' | 'mobile_money' | 'cheque'
 export interface PaymentAllocationItem {
   invoice_id: UUID
   invoice_number?: string
-  amount_cents: number
+  amount: number
 }
 
 /** POST /api/v1/payments body */
@@ -442,7 +430,7 @@ export interface CreatePaymentRequest {
     tenant_id: UUID
     reference: string
     payment_method: PaymentMethod
-    amount_cents: number
+    amount: number
     paid_at: string
     notes?: string
   }
@@ -454,10 +442,10 @@ export interface ApiPayment {
   tenant_id: UUID
   reference: string
   payment_method: PaymentMethod
-  amount_cents: number
+  amount: number
   paid_at: string
   notes?: string
-  unallocated_cents: number
+  unallocated: number
   allocations: PaymentAllocationItem[]
   created_at: string
   updated_at: string
@@ -474,7 +462,7 @@ export interface ApiPaymentAllocation {
   id: UUID
   payment_id: UUID
   invoice_id: UUID
-  amount_cents: number
+  amount: number
   allocated_at: string
   created_at: string
   updated_at: string
@@ -527,9 +515,9 @@ export interface UpdateMeterReadingRequest {
 export interface ApiPumpTopup {
   id: UUID
   property_id: UUID
-  topup_on: string
-  volume_liters: number
-  amount_cents: number
+  topup_date: string
+  quantity_liters: number
+  cost: number
   vendor_name?: string
   notes?: string
   created_at: string
@@ -543,9 +531,9 @@ export interface ListPumpTopupsParams extends PaginationParams {
 export interface CreatePumpTopupRequest {
   pump_topup: {
     property_id: UUID
-    topup_on: string
-    volume_liters: number
-    amount_cents: number
+    topup_date: string
+    quantity_liters: number
+    cost: number
     vendor_name?: string
     notes?: string
   }
@@ -598,8 +586,6 @@ export interface ApiMaintenanceRequest {
   resolved_at?: string
   notes?: string
   assigned_to?: string
-  estimated_cost_cents?: number
-  actual_cost_cents?: number
   created_at: string
   updated_at: string
 }

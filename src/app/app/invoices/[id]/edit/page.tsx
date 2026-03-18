@@ -20,7 +20,7 @@ import { PageLoader } from '@/components/shared/loading-spinner'
 
 const schema = z.object({
   status: z.enum(['draft', 'issued', 'partial', 'paid', 'overdue', 'void']),
-  due_on: z.string().min(1),
+  due_date: z.string().min(1),
   notes: z.string().optional(),
 })
 
@@ -43,7 +43,7 @@ function InvoiceEditInner() {
     if (invoiceQuery.data?.data) {
       reset({
         status: invoiceQuery.data.data.status,
-        due_on: toDateInputValue(invoiceQuery.data.data.due_on),
+        due_date: toDateInputValue(invoiceQuery.data.data.due_date),
         notes: invoiceQuery.data.data.notes ?? '',
       })
     }
@@ -54,7 +54,7 @@ function InvoiceEditInner() {
       invoicesEndpoints.update(params.id, {
         invoice: {
           status: values.status,
-          due_on: values.due_on,
+          due_date: values.due_date,
           notes: values.notes || undefined,
         },
       }),
@@ -76,9 +76,9 @@ function InvoiceEditInner() {
       <form onSubmit={handleSubmit((values) => update.mutate(values))} className="space-y-4">
         <Card className="p-6 space-y-4">
           <select {...register('status')} className="h-9 w-full rounded-md border px-3 text-sm"><option value="draft">Draft</option><option value="issued">Issued</option><option value="partial">Partial</option><option value="paid">Paid</option><option value="overdue">Overdue</option><option value="void">Void</option></select>
-          <input {...register('due_on')} type="date" className="h-9 w-full rounded-md border px-3 text-sm" />
+          <input {...register('due_date')} type="date" className="h-9 w-full rounded-md border px-3 text-sm" />
           <textarea {...register('notes')} rows={3} className="w-full rounded-md border px-3 py-2 text-sm" />
-          {errors.due_on && <p className="text-sm text-red-600">{errors.due_on.message}</p>}
+          {errors.due_date && <p className="text-sm text-red-600">{errors.due_date.message}</p>}
           {errors.root?.server && <p className="text-sm text-red-600">{errors.root.server.message}</p>}
         </Card>
         <div className="flex justify-end gap-2"><Link href={`/app/invoices/${params.id}`}><Button type="button" variant="outline">Cancel</Button></Link><Button type="submit" loading={update.isPending}>Save</Button></div>

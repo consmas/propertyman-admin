@@ -8,7 +8,7 @@ import { PageHeader } from '@/components/shared/page-header'
 import { Card } from '@/components/ui/card'
 import { PageLoader } from '@/components/shared/loading-spinner'
 import { ErrorState } from '@/components/shared/error-state'
-import { formatCents, formatDate } from '@/lib/utils'
+import { formatCurrency, formatDate } from '@/lib/utils'
 
 function RentInstallmentDetailInner() {
   const params = useParams<{ id: string }>()
@@ -23,8 +23,7 @@ function RentInstallmentDetailInner() {
       <Card className="p-6 space-y-2 text-sm">
         <p>Lease: <span className="font-mono">{row.lease_id}</span></p>
         <p>Due date: {formatDate(row.due_date)}</p>
-        <p>Amount: {formatCents(row.amount_cents)}</p>
-        <p>Balance: {formatCents(row.balance_cents)}</p>
+        <p>Amount: {formatCurrency(row.amount)}</p>
         <p>Status: {row.status}</p>
       </Card>
     </div>

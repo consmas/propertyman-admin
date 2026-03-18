@@ -15,7 +15,6 @@ import { RoleGate } from '@/components/shared/role-gate'
 import { PageHeader } from '@/components/shared/page-header'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { toCents } from '@/lib/utils'
 
 const UNIT_TYPE_OPTIONS = [
   { value: 'chamber_and_hall_self_contain', label: 'Chamber & Hall Self Contain' },
@@ -71,7 +70,7 @@ function NewUnitInner() {
         name: values.name,
         unit_type: values.unit_type,
         status: values.status,
-        monthly_rent_cents: toCents(Number(values.monthly_rent_ghs)),
+        monthly_rent: Number(values.monthly_rent_ghs),
       },
     })
   }

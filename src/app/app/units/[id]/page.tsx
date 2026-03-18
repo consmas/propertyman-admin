@@ -10,7 +10,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { PageLoader } from '@/components/shared/loading-spinner'
 import { ErrorState } from '@/components/shared/error-state'
-import { formatCents } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 
 const UNIT_TYPE_LABELS: Record<string, string> = {
   chamber_and_hall_self_contain: 'Chamber & Hall Self Contain',
@@ -43,9 +43,7 @@ function UnitDetailInner() {
       <Card className="p-6 space-y-2 text-sm">
         <p><span className="text-gray-500">Block:</span> {unit.name ?? '—'}</p>
         <p><span className="text-gray-500">Type:</span> {unitTypeLabel}</p>
-        <p><span className="text-gray-500">Rent:</span> {formatCents(unit.monthly_rent_cents ?? unit.rent_cents ?? 0)}</p>
-        <p><span className="text-gray-500">Bedrooms:</span> {unit.bedrooms ?? '—'}</p>
-        <p><span className="text-gray-500">Bathrooms:</span> {unit.bathrooms ?? '—'}</p>
+        <p><span className="text-gray-500">Rent:</span> {formatCurrency(unit.monthly_rent ?? 0)}</p>
       </Card>
     </div>
   )

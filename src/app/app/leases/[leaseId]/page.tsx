@@ -22,7 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { formatCents, formatDate } from '@/lib/utils'
+import { formatCurrency, formatDate } from '@/lib/utils'
 import { useHasRole } from '@/hooks/use-auth'
 import { ApiError } from '@/types'
 import type { ApiLease } from '@/types/api'
@@ -216,14 +216,14 @@ export default function LeaseDetailPage({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <KpiCard
           title="Monthly Rent"
-          value={formatCents(lease.rent_cents)}
+          value={formatCurrency(lease.rent)}
           icon={DollarSign}
           iconBg="bg-green-50"
           iconColor="text-green-600"
         />
         <KpiCard
           title="Security Deposit"
-          value={formatCents(lease.security_deposit_cents)}
+          value={formatCurrency(lease.security_deposit)}
           icon={DollarSign}
           iconBg="bg-blue-50"
           iconColor="text-blue-600"

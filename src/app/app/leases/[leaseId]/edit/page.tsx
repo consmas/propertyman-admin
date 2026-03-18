@@ -17,7 +17,6 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { PageLoader } from '@/components/shared/loading-spinner'
 import { ErrorState } from '@/components/shared/error-state'
-import { toCents } from '@/lib/utils'
 
 const schema = z.object({
   start_date: z.string().min(1),
@@ -44,8 +43,8 @@ function EditLeaseInner() {
         status: query.data.data.status,
         plan_months: query.data.data.plan_months,
         end_date: query.data.data.end_date,
-        rent_ghs: query.data.data.rent_cents / 100,
-        security_deposit_ghs: query.data.data.security_deposit_cents / 100,
+        rent_ghs: query.data.data.rent,
+        security_deposit_ghs: query.data.data.security_deposit,
       })
     }
   }, [query.data, reset])
@@ -58,8 +57,8 @@ function EditLeaseInner() {
           status: values.status,
           plan_months: values.plan_months as 3 | 6 | 12,
           end_date: values.end_date,
-          rent_cents: toCents(values.rent_ghs),
-          security_deposit_cents: toCents(values.security_deposit_ghs),
+          rent: values.rent_ghs,
+          security_deposit: values.security_deposit_ghs,
         },
       }),
     onSuccess: () => {

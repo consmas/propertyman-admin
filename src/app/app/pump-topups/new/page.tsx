@@ -15,12 +15,11 @@ import { RoleGate } from '@/components/shared/role-gate'
 import { PageHeader } from '@/components/shared/page-header'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { toCents } from '@/lib/utils'
 
 const schema = z.object({
-  topup_on: z.string().min(1),
-  volume_liters: z.coerce.number().positive(),
-  amount: z.coerce.number().positive(),
+  topup_date: z.string().min(1),
+  quantity_liters: z.coerce.number().positive(),
+  cost: z.coerce.number().positive(),
   vendor_name: z.string().optional(),
   notes: z.string().optional(),
 })
@@ -47,12 +46,12 @@ function NewPumpTopupInner() {
       <div className="flex items-center gap-3"><Link href="/app/pump-topups"><Button variant="ghost" size="icon"><ArrowLeft className="h-4 w-4" /></Button></Link><PageHeader title="New Pump Topup" description="Record pump topup" /></div>
       <form onSubmit={handleSubmit((values) => {
         if (!propertyId) return setError('root.server', { message: 'Select a property first' })
-        create.mutate({ pump_topup: { property_id: propertyId, topup_on: values.topup_on, volume_liters: values.volume_liters, amount_cents: toCents(values.amount), vendor_name: values.vendor_name || undefined, notes: values.notes || undefined } })
+        create.mutate({ pump_topup: { property_id: propertyId, topup_date: values.topup_date, quantity_liters: values.quantity_liters, cost: values.cost, vendor_name: values.vendor_name || undefined, notes: values.notes || undefined } })
       })} className="space-y-4">
         <Card className="p-6 space-y-4">
-          <input {...register('topup_on')} type="date" className="h-9 w-full rounded-md border px-3 text-sm" />
-          <input {...register('volume_liters')} type="number" step="0.001" placeholder="Volume liters" className="h-9 w-full rounded-md border px-3 text-sm" />
-          <input {...register('amount')} type="number" step="0.01" placeholder="Amount" className="h-9 w-full rounded-md border px-3 text-sm" />
+          <input {...register('topup_date')} type="date" className="h-9 w-full rounded-md border px-3 text-sm" />
+          <input {...register('quantity_liters')} type="number" step="0.001" placeholder="Volume liters" className="h-9 w-full rounded-md border px-3 text-sm" />
+          <input {...register('cost')} type="number" step="0.01" placeholder="Amount" className="h-9 w-full rounded-md border px-3 text-sm" />
           <input {...register('vendor_name')} placeholder="Vendor" className="h-9 w-full rounded-md border px-3 text-sm" />
           <textarea {...register('notes')} rows={3} placeholder="Notes" className="w-full rounded-md border px-3 py-2 text-sm" />
           {errors.root?.server && <p className="text-sm text-red-600">{errors.root.server.message}</p>}

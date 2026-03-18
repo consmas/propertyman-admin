@@ -21,8 +21,8 @@ const schema = z.object({
   unit_id: z.string().uuid().optional().or(z.literal('')),
   lease_id: z.string().uuid().optional().or(z.literal('')),
   invoice_type: z.enum(['rent', 'water', 'electricity', 'service_charge', 'penalty', 'other']),
-  issued_on: z.string().min(1),
-  due_on: z.string().min(1),
+  issue_date: z.string().min(1),
+  due_date: z.string().min(1),
   notes: z.string().optional(),
 })
 
@@ -56,8 +56,8 @@ function NewInvoiceInner() {
         unit_id: values.unit_id || undefined,
         lease_id: values.lease_id || undefined,
         invoice_type: values.invoice_type,
-        issued_on: values.issued_on,
-        due_on: values.due_on,
+        issue_date: values.issue_date,
+        due_date: values.due_date,
         notes: values.notes || undefined,
       },
     })
@@ -72,7 +72,7 @@ function NewInvoiceInner() {
           <input {...register('unit_id')} placeholder="Unit ID (optional)" className="h-9 w-full rounded-md border px-3 text-sm font-mono" />
           <input {...register('lease_id')} placeholder="Lease ID (optional)" className="h-9 w-full rounded-md border px-3 text-sm font-mono" />
           <select {...register('invoice_type')} className="h-9 w-full rounded-md border px-3 text-sm"><option value="rent">Rent</option><option value="water">Water</option><option value="electricity">Electricity</option><option value="service_charge">Service charge</option><option value="penalty">Penalty</option><option value="other">Other</option></select>
-          <div className="grid grid-cols-2 gap-3"><input {...register('issued_on')} type="date" className="h-9 w-full rounded-md border px-3 text-sm" /><input {...register('due_on')} type="date" className="h-9 w-full rounded-md border px-3 text-sm" /></div>
+          <div className="grid grid-cols-2 gap-3"><input {...register('issue_date')} type="date" className="h-9 w-full rounded-md border px-3 text-sm" /><input {...register('due_date')} type="date" className="h-9 w-full rounded-md border px-3 text-sm" /></div>
           <textarea {...register('notes')} rows={3} placeholder="Notes" className="w-full rounded-md border px-3 py-2 text-sm" />
           {errors.root?.server && <p className="text-sm text-red-600">{errors.root.server.message}</p>}
         </Card>

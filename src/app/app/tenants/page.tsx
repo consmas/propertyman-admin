@@ -12,7 +12,7 @@ import { PageHeader } from '@/components/shared/page-header'
 import { DataTable, type Column } from '@/components/shared/data-table'
 import { ErrorState } from '@/components/shared/error-state'
 import { Button } from '@/components/ui/button'
-import { formatCents } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 import type { ApiTenant } from '@/types/api'
 
 const columns: Column<ApiTenant>[] = [
@@ -20,7 +20,7 @@ const columns: Column<ApiTenant>[] = [
   { key: 'email', header: 'Email' },
   { key: 'phone', header: 'Phone' },
   { key: 'status', header: 'Status' },
-  { key: 'outstanding_cents', header: 'Outstanding', render: (row) => formatCents(row.outstanding_cents) },
+  { key: 'outstanding', header: 'Outstanding', render: (row) => formatCurrency(row.outstanding) },
 ]
 
 function TenantsInner() {

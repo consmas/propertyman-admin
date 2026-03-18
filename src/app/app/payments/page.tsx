@@ -10,7 +10,7 @@ import { paymentsEndpoints } from '@/lib/api/endpoints/payments'
 import { PageHeader } from '@/components/shared/page-header'
 import { DataTable, type Column } from '@/components/shared/data-table'
 import { Button } from '@/components/ui/button'
-import { formatCents, formatDate, humanizeStatus } from '@/lib/utils'
+import { formatCurrency, formatDate, humanizeStatus } from '@/lib/utils'
 import type { ApiPayment } from '@/types/api'
 
 const columns: Column<ApiPayment>[] = [
@@ -25,9 +25,9 @@ const columns: Column<ApiPayment>[] = [
     render: (row) => <span className="font-mono text-xs text-gray-500">{row.tenant_id.slice(0, 8)}…</span>,
   },
   {
-    key: 'amount_cents',
+    key: 'amount',
     header: 'Amount',
-    render: (row) => <span className="font-medium">{formatCents(row.amount_cents)}</span>,
+    render: (row) => <span className="font-medium">{formatCurrency(row.amount)}</span>,
   },
   {
     key: 'payment_method',
@@ -44,11 +44,11 @@ const columns: Column<ApiPayment>[] = [
     render: (row) => <span className="text-sm">{formatDate(row.paid_at, 'MMM d, yyyy HH:mm')}</span>,
   },
   {
-    key: 'unallocated_cents',
+    key: 'unallocated',
     header: 'Unallocated',
     render: (row) => (
-      <span className={row.unallocated_cents > 0 ? 'text-amber-600 font-medium' : 'text-gray-400'}>
-        {formatCents(row.unallocated_cents)}
+      <span className={row.unallocated > 0 ? 'text-amber-600 font-medium' : 'text-gray-400'}>
+        {formatCurrency(row.unallocated)}
       </span>
     ),
   },

@@ -21,7 +21,7 @@ import { Card } from '@/components/ui/card'
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
-import { formatCents, toCents } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 
 const schema = z.object({
   property_id: z.string().uuid('Must be a valid UUID'),
@@ -45,13 +45,13 @@ function computeEndDate(startDate: string, planMonths: number): string {
   }
 }
 
-function buildTermPreview(startDate: string, endDate: string, planMonths: number, monthlyRentCents: number) {
-  if (!startDate || !endDate || !planMonths || !monthlyRentCents) return []
-  const total = monthlyRentCents * planMonths
+function buildTermPreview(startDate: string, endDate: string, planMonths: number, monthlyRent: number) {
+  if (!startDate || !endDate || !planMonths || !monthlyRent) return []
+  const total = monthlyRent * planMonths
   return [{
     period: `${format(parseISO(startDate), 'MMM d, yyyy')} to ${format(parseISO(endDate), 'MMM d, yyyy')}`,
     months: planMonths,
-    monthly: monthlyRentCents,
+    monthly: monthlyRent,
     total,
   }]
 }
@@ -114,7 +114,7 @@ export default function NewLeasePage() {
       const months = parseInt(planMonths, 10)
       const computedEndDate = computeEndDate(startDate, months)
       setEndDate(computedEndDate)
-      setTermPreview(buildTermPreview(startDate, computedEndDate, months, toCents(rentGhs || 0)))
+      setTermPreview(buildTermPreview(startDate, computedEndDate, months, rentGhs || 0))
     }
   }, [startDate, planMonths, rentGhs])
 
@@ -144,8 +144,8 @@ export default function NewLeasePage() {
         end_date: endDate,
         plan_months: parseInt(values.plan_months, 10) as 3 | 6 | 12,
         status: values.status,
-        rent_cents: toCents(values.rent_ghs),
-        security_deposit_cents: toCents(values.security_deposit_ghs),
+        rent: values.rent_ghs,
+        security_deposit: values.security_deposit_ghs,
       },
     })
   }
@@ -351,14 +351,14 @@ export default function NewLeasePage() {
                     <span className="text-gray-600">{row.period}</span>
                     <span className="ml-2 text-gray-500">({row.months} months)</span>
                   </div>
-                  <span className="font-medium tabular-nums">{formatCents(row.total)}</span>
+                  <span className="font-medium tabular-nums">{formatCurrency(row.total)}</span>
                 </div>
               ))}
             </div>
             <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3 text-sm">
               <span className="font-medium text-gray-700">Invoice Total</span>
               <span className="font-semibold tabular-nums">
-                {formatCents(termPreview.reduce((s, r) => s + r.total, 0))}
+                {formatCurrency(termPreview.reduce((s, r) => s + r.total, 0))}
               </span>
             </div>
             <p className="mt-3 text-xs text-gray-500">

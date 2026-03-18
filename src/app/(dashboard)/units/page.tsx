@@ -29,16 +29,6 @@ const columns: Column<UnitRow>[] = [
     ),
   },
   {
-    key: 'floor',
-    header: 'Floor',
-    render: (row) => row.floor != null ? `Floor ${row.floor}` : '—',
-  },
-  {
-    key: 'bedrooms',
-    header: 'Beds/Baths',
-    render: (row) => `${row.bedrooms} bd / ${row.bathrooms} ba`,
-  },
-  {
     key: 'monthly_rent',
     header: 'Monthly Rent',
     render: (row) => <span className="font-medium">{formatCurrency(row.monthly_rent)}</span>,

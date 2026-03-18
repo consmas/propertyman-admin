@@ -33,17 +33,6 @@ export function formatPercent(value: number): string {
   return `${value.toFixed(1)}%`
 }
 
-/** Format cents (integer) into display currency */
-export function formatCents(cents: number | undefined | null, currency = process.env.NEXT_PUBLIC_DEFAULT_CURRENCY ?? 'GHS'): string {
-  if (cents == null) return `${currency} 0.00`
-  return formatCurrency(cents / 100, currency)
-}
-
-/** Convert user-entered decimal amount to integer cents */
-export function toCents(amount: number): number {
-  return Math.round(amount * 100)
-}
-
 /** Get initials from a full_name string or first/last pair */
 export function getInitials(nameOrFirst?: string, last?: string): string {
   if (!nameOrFirst) return '??'

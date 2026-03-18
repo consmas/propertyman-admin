@@ -2,7 +2,7 @@
 
 import { use } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { ArrowLeft, Clock, DollarSign, Wrench } from 'lucide-react'
+import { ArrowLeft, Clock, Wrench } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { maintenanceEndpoints } from '@/lib/api/endpoints/maintenance'
@@ -12,7 +12,7 @@ import { KpiCard } from '@/components/shared/kpi-card'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { formatCents, formatDate, formatRelativeDate, humanizeStatus } from '@/lib/utils'
+import { formatDate, formatRelativeDate, humanizeStatus } from '@/lib/utils'
 import type { ApiMaintenanceRequest, MaintenanceStatus } from '@/types/api'
 
 function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
@@ -121,20 +121,6 @@ export default function MaintenanceDetailPage({
           icon={Clock}
           iconBg="bg-blue-50"
           iconColor="text-blue-600"
-        />
-        <KpiCard
-          title="Estimated Cost"
-          value={request.estimated_cost_cents != null ? formatCents(request.estimated_cost_cents) : '—'}
-          icon={DollarSign}
-          iconBg="bg-amber-50"
-          iconColor="text-amber-600"
-        />
-        <KpiCard
-          title="Actual Cost"
-          value={request.actual_cost_cents != null ? formatCents(request.actual_cost_cents) : '—'}
-          icon={DollarSign}
-          iconBg="bg-green-50"
-          iconColor="text-green-600"
         />
       </div>
 

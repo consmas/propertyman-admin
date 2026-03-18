@@ -12,13 +12,13 @@ import { PageHeader } from '@/components/shared/page-header'
 import { DataTable, type Column } from '@/components/shared/data-table'
 import { ErrorState } from '@/components/shared/error-state'
 import { Button } from '@/components/ui/button'
-import { formatCents, formatDate } from '@/lib/utils'
+import { formatCurrency, formatDate } from '@/lib/utils'
 import type { ApiPumpTopup } from '@/types/api'
 
 const columns: Column<ApiPumpTopup>[] = [
-  { key: 'topup_on', header: 'Date', render: (r) => formatDate(r.topup_on) },
-  { key: 'volume_liters', header: 'Volume (L)' },
-  { key: 'amount_cents', header: 'Amount', render: (r) => formatCents(r.amount_cents) },
+  { key: 'topup_date', header: 'Date', render: (r) => formatDate(r.topup_date) },
+  { key: 'quantity_liters', header: 'Volume (L)' },
+  { key: 'cost', header: 'Amount', render: (r) => formatCurrency(r.cost) },
   { key: 'vendor_name', header: 'Vendor', render: (r) => r.vendor_name ?? '—' },
 ]
 

@@ -10,13 +10,12 @@ import { RoleGate } from '@/components/shared/role-gate'
 import { PageHeader } from '@/components/shared/page-header'
 import { DataTable, type Column } from '@/components/shared/data-table'
 import { ErrorState } from '@/components/shared/error-state'
-import { formatCents, formatDate } from '@/lib/utils'
+import { formatCurrency, formatDate } from '@/lib/utils'
 import type { ApiRentInstallment } from '@/types/api'
 
 const columns: Column<ApiRentInstallment>[] = [
   { key: 'due_date', header: 'Due', render: (r) => formatDate(r.due_date) },
-  { key: 'amount_cents', header: 'Amount', render: (r) => formatCents(r.amount_cents) },
-  { key: 'balance_cents', header: 'Balance', render: (r) => formatCents(r.balance_cents) },
+  { key: 'amount', header: 'Amount', render: (r) => formatCurrency(r.amount) },
   { key: 'status', header: 'Status' },
 ]
 

@@ -13,7 +13,7 @@ import { KpiCard } from '@/components/shared/kpi-card'
 import { Card } from '@/components/ui/card'
 import { ErrorState } from '@/components/shared/error-state'
 import { StatusBadge } from '@/components/shared/status-badge'
-import { formatCents, formatDate } from '@/lib/utils'
+import { formatCurrency, formatDate } from '@/lib/utils'
 
 export default function AppDashboardPage() {
   const propertyId = useCurrentPropertyId()
@@ -78,7 +78,7 @@ export default function AppDashboardPage() {
                   {payment.payment_method.replace('_', ' ')} • {formatDate(payment.paid_at, 'MMM d, yyyy HH:mm')}
                 </p>
               </div>
-              <p className="font-mono font-semibold text-[var(--text-primary)]">{formatCents(payment.amount_cents)}</p>
+              <p className="font-mono font-semibold text-[var(--text-primary)]">{formatCurrency(payment.amount)}</p>
             </div>
           ))}
         </Card>
@@ -115,13 +115,13 @@ export default function AppDashboardPage() {
             >
               <div className="min-w-0">
                 <p className="truncate font-semibold text-[var(--text-primary)]">{invoice.invoice_number}</p>
-                <p className="text-xs text-[var(--text-tertiary)]">Due {formatDate(invoice.due_on)}</p>
+                <p className="text-xs text-[var(--text-tertiary)]">Due {formatDate(invoice.due_date)}</p>
                 <div className="mt-1">
                   <StatusBadge status={invoice.status} type="invoice" />
                 </div>
               </div>
               <p className="font-mono font-semibold text-[var(--text-primary)]">
-                {formatCents(invoice.balance_cents)}
+                {formatCurrency(invoice.balance)}
               </p>
             </div>
           ))}
