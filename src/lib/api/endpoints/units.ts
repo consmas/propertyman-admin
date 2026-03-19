@@ -36,8 +36,25 @@ export const unitsEndpoints = {
   },
 
   bulkCreate: async (payload: BulkCreateUnitRequest): Promise<ApiResponse<ApiUnit[]>> => {
-    const res = await apiClient.post('/units/bulk_create', payload)
-    return unwrapApiResponse<ApiUnit[]>(res.data)
+    const normStatus = (s: string) => {
+      if (s === 'available') return 'vacant'
+      if (s === 'unavailable') return 'reserved'
+      return s
+    }
+    const normalized = {
+      ...payload,
+      units: payload.units.map((u) => ({ ...u, status: normStatus(u.status) })),
+    }
+    try {
+      const res = await apiClient.post('/units/bulk_create', normalized)
+      return unwrapApiResponse<ApiUnit[]>(res.data)
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        const res = await apiClient.post(`/properties/${payload.property_id}/units/bulk_create`, normalized)
+        return unwrapApiResponse<ApiUnit[]>(res.data)
+      }
+      throw error
+    }
   },
 
   update: async (id: string, payload: UpdateUnitRequest): Promise<ApiResponse<ApiUnit>> => {
