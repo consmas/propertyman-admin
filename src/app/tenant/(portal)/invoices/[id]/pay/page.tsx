@@ -8,9 +8,11 @@ import { invoicesEndpoints } from '@/lib/api/endpoints/invoices'
 import { onlinePaymentsEndpoints } from '@/lib/api/endpoints/online-payments'
 import { useTenantProfile } from '@/hooks/use-tenant'
 import { PageHeader } from '@/components/shared/page-header'
+import { Card } from '@/components/ui/card'
 import { ErrorState } from '@/components/shared/error-state'
 import { PageLoader } from '@/components/shared/loading-spinner'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { formatCurrency, formatDate, humanizeStatus } from '@/lib/utils'
 import type { OnlinePaymentChannel, OnlinePaymentPurpose } from '@/types/api'
 
@@ -43,7 +45,6 @@ function purposeForInvoiceType(type: string): OnlinePaymentPurpose {
 
 export default function TenantPayPage() {
   const params = useParams<{ id: string }>()
-  const router = useRouter()
 
   const [channel, setChannel] = useState<OnlinePaymentChannel>('mobile_money')
   const [partialAmount, setPartialAmount] = useState('')
@@ -85,7 +86,7 @@ export default function TenantPayPage() {
 
   if (balance <= 0) {
     return (
-      <div className="space-y-6">
+      <div className="fade-up space-y-6">
         <div className="flex items-center gap-3">
           <Link href={`/tenant/invoices/${params.id}`}>
             <Button variant="ghost" size="icon"><ArrowLeft className="h-4 w-4" /></Button>
@@ -102,7 +103,6 @@ export default function TenantPayPage() {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setApiError(null)
-
     if (!tenantProfile) {
       setApiError('Could not find your tenant profile. Please refresh and try again.')
       return
@@ -111,7 +111,6 @@ export default function TenantPayPage() {
       setApiError('Invoice is missing property information.')
       return
     }
-
     createIntent.mutate({
       online_payment: {
         property_id: invoice.property_id,
@@ -126,7 +125,8 @@ export default function TenantPayPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-xl">
+    <div className="fade-up space-y-6 max-w-xl">
+      {/* Header */}
       <div className="flex items-center gap-3">
         <Link href={`/tenant/invoices/${params.id}`}>
           <Button variant="ghost" size="icon"><ArrowLeft className="h-4 w-4" /></Button>
@@ -138,89 +138,118 @@ export default function TenantPayPage() {
       </div>
 
       {/* Invoice summary */}
-      <div className="rounded-xl border border-gray-200 bg-white p-5">
+      <Card className="p-5">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-500">{humanizeStatus(invoice.invoice_type)}</p>
-            <p className="mt-0.5 text-xs text-gray-400">{invoice.invoice_number}</p>
+            <p className="text-[13px]" style={{ color: 'var(--text-secondary)' }}>
+              {humanizeStatus(invoice.invoice_type)}
+            </p>
+            <p className="mt-0.5 font-mono text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
+              {invoice.invoice_number}
+            </p>
           </div>
           <div className="text-right">
-            <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Outstanding Balance</p>
-            <p className="text-2xl font-bold text-gray-900">{formatCurrency(balance)}</p>
+            <p
+              className="text-[11px] font-bold uppercase tracking-[0.07em]"
+              style={{ color: 'var(--text-tertiary)' }}
+            >
+              Outstanding Balance
+            </p>
+            <p className="font-display text-[24px] font-bold" style={{ color: 'var(--text-primary)' }}>
+              {formatCurrency(balance)}
+            </p>
           </div>
         </div>
-      </div>
+      </Card>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Channel selector */}
-        <div>
-          <p className="text-sm font-medium text-gray-700 mb-3">Payment Method</p>
+        <Card className="p-5">
+          <p
+            className="text-[13px] font-semibold mb-3"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            Payment Method
+          </p>
           <div className="space-y-2">
             {CHANNELS.map((ch) => (
               <button
                 key={ch.value}
                 type="button"
                 onClick={() => setChannel(ch.value)}
-                className={`w-full flex items-center gap-3 rounded-xl border p-4 text-left transition-colors ${
-                  channel === ch.value
-                    ? 'border-emerald-500 bg-emerald-50 ring-1 ring-emerald-500'
-                    : 'border-gray-200 bg-white hover:border-gray-300'
-                }`}
+                className="w-full flex items-center gap-3 rounded-xl p-4 text-left transition-all"
+                style={{
+                  border: channel === ch.value
+                    ? '2px solid var(--brand-600)'
+                    : '1.5px solid var(--border-default)',
+                  background: channel === ch.value ? 'var(--brand-50)' : 'var(--surface-primary)',
+                }}
               >
-                <span className={channel === ch.value ? 'text-emerald-600' : 'text-gray-400'}>
+                <span style={{ color: channel === ch.value ? 'var(--brand-600)' : 'var(--text-tertiary)' }}>
                   {ch.icon}
                 </span>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">{ch.label}</p>
-                  <p className="text-xs text-gray-500">{ch.description}</p>
+                  <p className="text-[13px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+                    {ch.label}
+                  </p>
+                  <p className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
+                    {ch.description}
+                  </p>
                 </div>
               </button>
             ))}
           </div>
-        </div>
+        </Card>
 
-        {/* Optional partial amount */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Amount to Pay (GHS)
-          </label>
-          <input
+        {/* Partial amount */}
+        <Card className="p-5">
+          <Input
             type="number"
             min="0.01"
             max={balance}
             step="0.01"
+            label="Amount to Pay"
             placeholder={`Full balance: ${balance.toFixed(2)}`}
             value={partialAmount}
             onChange={(e) => setPartialAmount(e.target.value)}
-            className="h-10 w-full rounded-md border border-gray-300 px-3 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            error={partialAmount && !isValidAmount ? `Must be between 0.01 and ${formatCurrency(balance)}` : undefined}
           />
-          {partialAmount && !isValidAmount && (
-            <p className="mt-1 text-xs text-red-500">
-              Amount must be between 0.01 and {formatCurrency(balance)}
-            </p>
-          )}
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1.5 text-[12px]" style={{ color: 'var(--text-tertiary)' }}>
             Leave blank to pay the full outstanding balance.
           </p>
-        </div>
+        </Card>
 
         {/* Error */}
         {apiError && (
-          <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3">
-            <AlertCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />
-            <p className="text-sm text-red-700">{apiError}</p>
+          <div
+            className="flex items-start gap-3 rounded-xl px-4 py-3"
+            style={{
+              border: '1px solid var(--error-500)',
+              background: 'var(--error-50)',
+            }}
+          >
+            <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" style={{ color: 'var(--error-500)' }} />
+            <p className="text-[13px]" style={{ color: 'var(--error-500)' }}>{apiError}</p>
           </div>
         )}
 
         {/* Summary */}
-        <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4">
+        <div
+          className="rounded-xl px-4 py-4"
+          style={{
+            border: '1px solid var(--brand-200)',
+            background: 'var(--brand-50)',
+          }}
+        >
           <div className="flex items-center justify-between">
-            <p className="text-sm font-medium text-emerald-800">You will pay</p>
-            <p className="text-xl font-bold text-emerald-900">
+            <p className="text-[13px] font-semibold" style={{ color: 'var(--brand-700)' }}>
+              You will pay
+            </p>
+            <p className="font-display text-[20px] font-bold" style={{ color: 'var(--brand-700)' }}>
               {isValidAmount ? formatCurrency(amountToPay) : formatCurrency(balance)}
             </p>
           </div>
-          <p className="mt-1 text-xs text-emerald-700">
+          <p className="mt-1 text-[12px]" style={{ color: 'var(--brand-600)' }}>
             You will be redirected to a secure payment page to complete the transaction.
           </p>
         </div>
@@ -228,9 +257,12 @@ export default function TenantPayPage() {
         <Button
           type="submit"
           disabled={createIntent.isPending || (Boolean(partialAmount) && !isValidAmount)}
-          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-11 text-base font-semibold"
+          loading={createIntent.isPending}
+          className="w-full h-11 text-[15px] font-semibold"
         >
-          {createIntent.isPending ? 'Initiating payment…' : `Pay ${isValidAmount && partialAmount ? formatCurrency(amountToPay) : formatCurrency(balance)}`}
+          {createIntent.isPending
+            ? 'Initiating payment…'
+            : `Pay ${isValidAmount && partialAmount ? formatCurrency(amountToPay) : formatCurrency(balance)}`}
         </Button>
       </form>
     </div>

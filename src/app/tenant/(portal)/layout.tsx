@@ -10,20 +10,29 @@ import { cn } from '@/lib/utils'
 function TenantPortalShell({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div
+      className="flex h-screen overflow-hidden"
+      style={{ background: 'var(--bg-base)' }}
+    >
       {sidebarOpen && (
-        <div className="fixed inset-0 z-40 bg-black/20 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div
+          className="fixed inset-0 z-40 lg:hidden"
+          style={{ background: 'rgba(0,0,0,0.4)' }}
+          onClick={() => setSidebarOpen(false)}
+        />
       )}
-      <aside className={cn(
-        'fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0',
-        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      )}>
+      <aside
+        className={cn(
+          'fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-200 ease-in-out lg:relative lg:translate-x-0',
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        )}
+      >
         <TenantSidebar onClose={() => setSidebarOpen(false)} />
       </aside>
       <div className="flex flex-1 flex-col overflow-hidden min-w-0">
         <TenantTopNav onMenuClick={() => setSidebarOpen(true)} />
         <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-4xl space-y-6 p-4 md:p-6">
+          <div className="mx-auto max-w-5xl p-5 md:p-7">
             {children}
           </div>
         </main>

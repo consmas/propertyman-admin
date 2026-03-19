@@ -4,10 +4,12 @@ import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import { invoicesEndpoints } from '@/lib/api/endpoints/invoices'
-import { PageHeader } from '@/components/shared/page-header'
+import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { ErrorState } from '@/components/shared/error-state'
 import { PageLoader } from '@/components/shared/loading-spinner'
-import { Button } from '@/components/ui/button'
+import { PageHeader } from '@/components/shared/page-header'
 import { formatCurrency, formatDate, humanizeStatus } from '@/lib/utils'
 
 interface InvoiceItem {
@@ -16,6 +18,34 @@ interface InvoiceItem {
   quantity: number
   unit_amount: number
   line_total: number
+}
+
+const STATUS_VARIANT: Record<string, 'success' | 'gray' | 'danger' | 'warning'> = {
+  paid: 'success',
+  draft: 'gray',
+  void: 'gray',
+  issued: 'warning',
+  partial: 'warning',
+  overdue: 'danger',
+}
+
+function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div
+      className="flex items-start justify-between gap-4 py-3 last:border-0"
+      style={{ borderBottom: '1px solid var(--border-default)' }}
+    >
+      <span
+        className="text-[12px] font-bold uppercase tracking-[0.07em] shrink-0 mt-0.5 min-w-[120px]"
+        style={{ color: 'var(--text-tertiary)' }}
+      >
+        {label}
+      </span>
+      <span className="text-[13px] font-medium text-right" style={{ color: 'var(--text-primary)' }}>
+        {children}
+      </span>
+    </div>
+  )
 }
 
 export default function TenantInvoiceDetailPage() {
@@ -37,7 +67,8 @@ export default function TenantInvoiceDetailPage() {
   const paidAmount = (invoice.total ?? 0) - (invoice.balance ?? 0)
 
   return (
-    <div className="space-y-6">
+    <div className="fade-up space-y-6 max-w-4xl">
+      {/* Header */}
       <div className="flex items-center gap-3">
         <Link href="/tenant/invoices">
           <Button variant="ghost" size="icon">
@@ -50,90 +81,121 @@ export default function TenantInvoiceDetailPage() {
         />
       </div>
 
-      {/* Invoice summary */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-3">
-          <h2 className="text-sm font-semibold text-gray-900">Invoice Info</h2>
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Number</p>
-              <p className="mt-1 text-gray-900 font-mono">{invoice.invoice_number}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Type</p>
-              <p className="mt-1 text-gray-900">{humanizeStatus(invoice.invoice_type)}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Status</p>
-              <p className="mt-1 text-gray-900">{humanizeStatus(invoice.status)}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Issued</p>
-              <p className="mt-1 text-gray-900">{formatDate(invoice.issue_date)}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Due Date</p>
-              <p className="mt-1 text-gray-900">{formatDate(invoice.due_date)}</p>
-            </div>
-          </div>
-        </div>
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        {/* Invoice info */}
+        <Card className="p-6">
+          <h3
+            className="font-display text-[15px] font-semibold mb-4"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            Invoice Info
+          </h3>
+          <DetailRow label="Number">
+            <span className="font-mono text-[12px]">{invoice.invoice_number}</span>
+          </DetailRow>
+          <DetailRow label="Type">{humanizeStatus(invoice.invoice_type)}</DetailRow>
+          <DetailRow label="Status">
+            <Badge variant={STATUS_VARIANT[invoice.status] ?? 'gray'}>{invoice.status}</Badge>
+          </DetailRow>
+          <DetailRow label="Issued">{formatDate(invoice.issue_date)}</DetailRow>
+          <DetailRow label="Due Date">{formatDate(invoice.due_date)}</DetailRow>
+        </Card>
 
-        <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-3">
-          <h2 className="text-sm font-semibold text-gray-900">Amounts</h2>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">Total</p>
-              <p className="text-sm font-semibold text-gray-900">{formatCurrency(invoice.total)}</p>
-            </div>
-            <div className="flex items-center justify-between">
-              <p className="text-sm text-gray-500">Paid</p>
-              <p className="text-sm font-semibold text-emerald-700">{formatCurrency(paidAmount)}</p>
-            </div>
-            <div className="border-t border-gray-100 pt-3 flex items-center justify-between">
-              <p className="text-sm font-medium text-gray-700">Outstanding Balance</p>
-              <p className="text-lg font-bold text-gray-900">{formatCurrency(invoice.balance)}</p>
-            </div>
+        {/* Amounts */}
+        <Card className="p-6">
+          <h3
+            className="font-display text-[15px] font-semibold mb-4"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            Amounts
+          </h3>
+          <DetailRow label="Total">{formatCurrency(invoice.total)}</DetailRow>
+          <DetailRow label="Paid">
+            <span style={{ color: 'var(--success-500)' }} className="font-bold">
+              {formatCurrency(paidAmount)}
+            </span>
+          </DetailRow>
+          <div
+            className="flex items-center justify-between py-3"
+            style={{ borderTop: '2px solid var(--border-default)' }}
+          >
+            <span
+              className="text-[13px] font-bold uppercase tracking-[0.05em]"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Balance Due
+            </span>
+            <span
+              className="font-display text-[20px] font-bold"
+              style={{
+                color: (invoice.balance ?? 0) > 0 ? 'var(--error-500)' : 'var(--success-500)',
+              }}
+            >
+              {formatCurrency(invoice.balance)}
+            </span>
           </div>
 
           {(invoice.balance ?? 0) > 0 && (
-            <div className="pt-2">
+            <div className="mt-4">
               <Link href={`/tenant/invoices/${invoice.id}/pay`} className="block">
-                <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
-                  Pay Now
-                </Button>
+                <Button className="w-full">Pay Now</Button>
               </Link>
             </div>
           )}
-        </div>
+        </Card>
       </div>
 
       {/* Line items */}
       {items.length > 0 && (
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <h2 className="text-sm font-semibold text-gray-900 mb-4">Line Items</h2>
+        <Card className="p-6">
+          <h3
+            className="font-display text-[15px] font-semibold mb-4"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            Line Items
+          </h3>
           <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="pb-2 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Description</th>
-                  <th className="pb-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Qty</th>
-                  <th className="pb-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Unit Price</th>
-                  <th className="pb-2 text-right text-xs font-semibold text-gray-500 uppercase tracking-wide">Total</th>
+                <tr style={{ borderBottom: '1px solid var(--border-default)' }}>
+                  {['Description', 'Qty', 'Unit Price', 'Total'].map((h) => (
+                    <th
+                      key={h}
+                      className={`pb-3 text-[11px] font-bold uppercase tracking-[0.07em] ${h !== 'Description' ? 'text-right' : 'text-left'}`}
+                      style={{ color: 'var(--text-tertiary)' }}
+                    >
+                      {h}
+                    </th>
+                  ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
-                {items.map(item => (
-                  <tr key={item.id}>
-                    <td className="py-3 text-sm text-gray-900">{item.description}</td>
-                    <td className="py-3 text-sm text-gray-600 text-right">{item.quantity}</td>
-                    <td className="py-3 text-sm text-gray-600 text-right">{formatCurrency(item.unit_amount)}</td>
-                    <td className="py-3 text-sm font-medium text-gray-900 text-right">{formatCurrency(item.line_total)}</td>
+              <tbody>
+                {items.map((item) => (
+                  <tr
+                    key={item.id}
+                    style={{ borderBottom: '1px solid var(--border-default)' }}
+                  >
+                    <td className="py-3 text-[13px]" style={{ color: 'var(--text-primary)' }}>
+                      {item.description}
+                    </td>
+                    <td className="py-3 text-[13px] text-right" style={{ color: 'var(--text-secondary)' }}>
+                      {item.quantity}
+                    </td>
+                    <td className="py-3 text-[13px] text-right" style={{ color: 'var(--text-secondary)' }}>
+                      {formatCurrency(item.unit_amount)}
+                    </td>
+                    <td
+                      className="py-3 text-[13px] font-semibold text-right"
+                      style={{ color: 'var(--text-primary)' }}
+                    >
+                      {formatCurrency(item.line_total)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
+        </Card>
       )}
     </div>
   )

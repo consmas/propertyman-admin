@@ -11,9 +11,12 @@ import { useTenantProfile } from '@/hooks/use-tenant'
 import { leasesEndpoints } from '@/lib/api/endpoints/leases'
 import { maintenanceEndpoints } from '@/lib/api/endpoints/maintenance'
 import { PageHeader } from '@/components/shared/page-header'
+import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { ErrorState } from '@/components/shared/error-state'
-import { cn } from '@/lib/utils'
+import { PageLoader } from '@/components/shared/loading-spinner'
 import type { MaintenancePriority } from '@/types/api'
 
 const schema = z.object({
@@ -45,9 +48,9 @@ export default function TenantNewMaintenancePage() {
     enabled: Boolean(propertyId),
   })
 
-  const activeLease = leasesRes?.data?.find(
-    l => l.tenant_id === tenantId && l.status === 'active'
-  ) ?? leasesRes?.data?.find(l => l.tenant_id === tenantId)
+  const activeLease =
+    leasesRes?.data?.find((l) => l.tenant_id === tenantId && l.status === 'active') ??
+    leasesRes?.data?.find((l) => l.tenant_id === tenantId)
 
   const {
     register,
@@ -97,13 +100,7 @@ export default function TenantNewMaintenancePage() {
     })
   }
 
-  if (loadingTenant) {
-    return (
-      <div className="flex h-64 items-center justify-center text-gray-400 text-sm">
-        Loading profile…
-      </div>
-    )
-  }
+  if (loadingTenant) return <PageLoader />
 
   if (tenantError || !tenant) {
     return (
@@ -114,10 +111,11 @@ export default function TenantNewMaintenancePage() {
     )
   }
 
-  const priorityInfo = PRIORITIES.find(p => p.value === selectedPriority)
+  const priorityInfo = PRIORITIES.find((p) => p.value === selectedPriority)
 
   return (
-    <div className="space-y-6">
+    <div className="fade-up space-y-6 max-w-2xl">
+      {/* Header */}
       <div className="flex items-center gap-3">
         <Link href="/tenant/maintenance">
           <Button variant="ghost" size="icon">
@@ -127,76 +125,82 @@ export default function TenantNewMaintenancePage() {
         <PageHeader title="Submit Maintenance Request" description="Report an issue that needs attention" />
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 max-w-2xl">
-        <div className="rounded-xl border border-gray-200 bg-white p-6 space-y-4">
-          {/* Title */}
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Title <span className="text-red-500">*</span>
-            </label>
-            <input
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <Card className="p-6">
+          <h3
+            className="font-display text-[15px] font-semibold mb-5"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            Request Details
+          </h3>
+          <div className="space-y-4">
+            <Input
               {...register('title')}
+              label="Title"
               placeholder="e.g. Broken pipe in bathroom"
-              className={cn(
-                'h-9 w-full rounded-md border border-gray-300 bg-white px-3 text-sm shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500',
-                errors.title && 'border-red-500 focus:ring-red-500'
-              )}
+              error={errors.title?.message}
             />
-            {errors.title && <p className="text-xs text-red-600">{errors.title.message}</p>}
-          </div>
 
-          {/* Description */}
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Description <span className="text-red-500">*</span>
-            </label>
-            <textarea
-              {...register('description')}
-              rows={5}
-              placeholder="Describe the issue in detail — location, symptoms, any safety concerns…"
-              className={cn(
-                'w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none',
-                errors.description && 'border-red-500 focus:ring-red-500'
+            <div className="space-y-1.5">
+              <label
+                className="block text-sm font-semibold"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                Description
+              </label>
+              <textarea
+                {...register('description')}
+                rows={5}
+                placeholder="Describe the issue in detail — location, symptoms, any safety concerns…"
+                className="w-full rounded-[10px] px-3 py-2.5 text-sm resize-none outline-none transition-all"
+                style={{
+                  border: errors.description
+                    ? '1.5px solid var(--error-500)'
+                    : '1.5px solid var(--border-default)',
+                  background: 'var(--surface-primary)',
+                  color: 'var(--text-primary)',
+                }}
+              />
+              {errors.description && (
+                <p className="text-[12px]" style={{ color: 'var(--error-500)' }}>
+                  {errors.description.message}
+                </p>
               )}
-            />
-            {errors.description && <p className="text-xs text-red-600">{errors.description.message}</p>}
-          </div>
+            </div>
 
-          {/* Priority */}
-          <div className="space-y-1">
-            <label className="block text-sm font-medium text-gray-700">
-              Priority <span className="text-red-500">*</span>
-            </label>
             <Controller
               name="priority"
               control={control}
               render={({ field }) => (
-                <select
-                  value={field.value}
-                  onChange={e => field.onChange(e.target.value)}
-                  className="h-9 w-full rounded-md border border-gray-300 bg-white px-3 text-sm shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                >
-                  {PRIORITIES.map(p => (
-                    <option key={p.value} value={p.value}>{p.label}</option>
-                  ))}
-                </select>
+                <div className="space-y-1.5">
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger label="Priority" error={errors.priority?.message}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PRIORITIES.map((p) => (
+                        <SelectItem key={p.value} value={p.value}>
+                          {p.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {priorityInfo && (
+                    <p className="text-[12px]" style={{ color: 'var(--text-tertiary)' }}>
+                      {priorityInfo.description}
+                    </p>
+                  )}
+                </div>
               )}
             />
-            {priorityInfo && (
-              <p className="text-xs text-gray-500">{priorityInfo.description}</p>
-            )}
           </div>
-        </div>
+        </Card>
 
-        <div className="flex items-center justify-end gap-3">
+        <div className="flex items-center justify-end gap-2">
           <Link href="/tenant/maintenance">
             <Button variant="outline" type="button">Cancel</Button>
           </Link>
-          <Button
-            type="submit"
-            loading={isPending}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white"
-          >
+          <Button type="submit" loading={isPending}>
             Submit Request
           </Button>
         </div>

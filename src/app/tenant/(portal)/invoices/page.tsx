@@ -4,9 +4,11 @@ import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useTenantProfile } from '@/hooks/use-tenant'
 import { invoicesEndpoints } from '@/lib/api/endpoints/invoices'
-import { PageHeader } from '@/components/shared/page-header'
 import { DataTable, type Column } from '@/components/shared/data-table'
 import { ErrorState } from '@/components/shared/error-state'
+import { PageLoader } from '@/components/shared/loading-spinner'
+import { Badge } from '@/components/ui/badge'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { formatCurrency, formatDate, humanizeStatus } from '@/lib/utils'
 import type { ApiInvoice, InvoiceStatus } from '@/types/api'
 
@@ -19,6 +21,15 @@ const STATUS_OPTIONS: { value: InvoiceStatus | ''; label: string }[] = [
   { value: 'overdue', label: 'Overdue' },
   { value: 'void', label: 'Voided' },
 ]
+
+const STATUS_VARIANT: Record<string, 'success' | 'gray' | 'danger' | 'warning'> = {
+  paid: 'success',
+  draft: 'gray',
+  void: 'gray',
+  issued: 'warning',
+  partial: 'warning',
+  overdue: 'danger',
+}
 
 export default function TenantInvoicesPage() {
   const router = useRouter()
@@ -39,13 +50,7 @@ export default function TenantInvoicesPage() {
     enabled: Boolean(tenantId && propertyId),
   })
 
-  if (loadingTenant) {
-    return (
-      <div className="flex h-64 items-center justify-center text-gray-400 text-sm">
-        Loading profile…
-      </div>
-    )
-  }
+  if (loadingTenant) return <PageLoader />
 
   if (tenantError || !tenant) {
     return (
@@ -60,38 +65,44 @@ export default function TenantInvoicesPage() {
 
   const columns: Column<ApiInvoice>[] = [
     { key: 'invoice_number', header: 'Invoice #' },
-    { key: 'invoice_type', header: 'Type', render: r => humanizeStatus(r.invoice_type) },
-    { key: 'status', header: 'Status', render: r => humanizeStatus(r.status) },
-    { key: 'total', header: 'Total', render: r => formatCurrency(r.total) },
-    { key: 'balance', header: 'Balance', render: r => formatCurrency(r.balance) },
-    { key: 'issue_date', header: 'Issued', render: r => formatDate(r.issue_date) },
-    { key: 'due_date', header: 'Due', render: r => formatDate(r.due_date) },
+    { key: 'invoice_type', header: 'Type', render: (r) => humanizeStatus(r.invoice_type) },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (r) => <Badge variant={STATUS_VARIANT[r.status] ?? 'gray'}>{r.status}</Badge>,
+    },
+    { key: 'total', header: 'Total', render: (r) => formatCurrency(r.total) },
+    { key: 'balance', header: 'Balance', render: (r) => formatCurrency(r.balance) },
+    { key: 'issue_date', header: 'Issued', render: (r) => formatDate(r.issue_date) },
+    { key: 'due_date', header: 'Due', render: (r) => formatDate(r.due_date) },
   ]
 
   return (
-    <div className="space-y-6">
-      <PageHeader title="Invoices" description="All invoices for your tenancy" />
-
-      <div className="flex items-center gap-3">
-        <select
+    <div className="fade-up space-y-6">
+      <div className="flex items-center justify-between gap-3">
+        <Select
           value={statusFilter}
-          onChange={e => setStatusFilter(e.target.value as InvoiceStatus | '')}
-          className="h-9 rounded-md border border-gray-300 bg-white px-3 text-sm shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          onValueChange={(v) => setStatusFilter(v as InvoiceStatus | '')}
         >
-          {STATUS_OPTIONS.map(opt => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="w-48">
+            <SelectValue placeholder="All statuses" />
+          </SelectTrigger>
+          <SelectContent>
+            {STATUS_OPTIONS.map((opt) => (
+              <SelectItem key={opt.value} value={opt.value || '_all'}>
+                {opt.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <DataTable
         columns={columns}
         data={invoices}
         isLoading={loadingInvoices}
-        rowKey={r => r.id}
-        onRowClick={row => router.push(`/tenant/invoices/${row.id}`)}
+        rowKey={(r) => r.id}
+        onRowClick={(row) => router.push(`/tenant/invoices/${row.id}`)}
         emptyMessage="No invoices found."
       />
     </div>

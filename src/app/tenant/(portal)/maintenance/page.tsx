@@ -6,11 +6,13 @@ import Link from 'next/link'
 import { Plus } from 'lucide-react'
 import { useTenantProfile } from '@/hooks/use-tenant'
 import { maintenanceEndpoints } from '@/lib/api/endpoints/maintenance'
-import { PageHeader } from '@/components/shared/page-header'
 import { DataTable, type Column } from '@/components/shared/data-table'
 import { ErrorState } from '@/components/shared/error-state'
+import { PageLoader } from '@/components/shared/loading-spinner'
 import { Button } from '@/components/ui/button'
-import { formatDate, humanizeStatus } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { formatDate } from '@/lib/utils'
 import type { ApiMaintenanceRequest, MaintenanceStatus, MaintenancePriority } from '@/types/api'
 
 const STATUS_OPTIONS: { value: MaintenanceStatus | ''; label: string }[] = [
@@ -29,6 +31,21 @@ const PRIORITY_OPTIONS: { value: MaintenancePriority | ''; label: string }[] = [
   { value: 'high', label: 'High' },
   { value: 'urgent', label: 'Urgent' },
 ]
+
+const STATUS_VARIANT: Record<string, 'success' | 'gray' | 'danger' | 'warning'> = {
+  open: 'warning',
+  in_progress: 'warning',
+  resolved: 'success',
+  closed: 'gray',
+  cancelled: 'gray',
+}
+
+const PRIORITY_VARIANT: Record<string, 'success' | 'gray' | 'danger' | 'warning'> = {
+  low: 'gray',
+  medium: 'warning',
+  high: 'danger',
+  urgent: 'danger',
+}
 
 export default function TenantMaintenancePage() {
   const router = useRouter()
@@ -50,13 +67,7 @@ export default function TenantMaintenancePage() {
     enabled: Boolean(propertyId),
   })
 
-  if (loadingTenant) {
-    return (
-      <div className="flex h-64 items-center justify-center text-gray-400 text-sm">
-        Loading profile…
-      </div>
-    )
-  }
+  if (loadingTenant) return <PageLoader />
 
   if (tenantError || !tenant) {
     return (
@@ -68,64 +79,76 @@ export default function TenantMaintenancePage() {
   }
 
   const allRequests = maintenanceRes?.data ?? []
-  // Show requests associated with this tenant or all property requests
   const requests = tenantId
-    ? allRequests.filter(r => !r.tenant_id || r.tenant_id === tenantId)
+    ? allRequests.filter((r) => !r.tenant_id || r.tenant_id === tenantId)
     : allRequests
 
   const columns: Column<ApiMaintenanceRequest>[] = [
     { key: 'title', header: 'Title' },
-    { key: 'priority', header: 'Priority', render: r => humanizeStatus(r.priority) },
-    { key: 'status', header: 'Status', render: r => humanizeStatus(r.status) },
-    { key: 'requested_at', header: 'Submitted', render: r => formatDate(r.requested_at) },
+    {
+      key: 'priority',
+      header: 'Priority',
+      render: (r) => <Badge variant={PRIORITY_VARIANT[r.priority] ?? 'gray'}>{r.priority}</Badge>,
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      render: (r) => <Badge variant={STATUS_VARIANT[r.status] ?? 'gray'}>{r.status}</Badge>,
+    },
+    { key: 'requested_at', header: 'Submitted', render: (r) => formatDate(r.requested_at) },
   ]
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Maintenance Requests"
-        description="Track and submit maintenance requests"
-        actions={
-          <Link href="/tenant/maintenance/new">
-            <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
-              <Plus className="h-4 w-4" />
-              Submit Request
-            </Button>
-          </Link>
-        }
-      />
+    <div className="fade-up space-y-6">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Select
+            value={statusFilter}
+            onValueChange={(v) => setStatusFilter(v as MaintenanceStatus | '')}
+          >
+            <SelectTrigger className="w-44">
+              <SelectValue placeholder="All statuses" />
+            </SelectTrigger>
+            <SelectContent>
+              {STATUS_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value || '_all'}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-      <div className="flex items-center gap-3">
-        <select
-          value={statusFilter}
-          onChange={e => setStatusFilter(e.target.value as MaintenanceStatus | '')}
-          className="h-9 rounded-md border border-gray-300 bg-white px-3 text-sm shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-        >
-          {STATUS_OPTIONS.map(opt => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-        <select
-          value={priorityFilter}
-          onChange={e => setPriorityFilter(e.target.value as MaintenancePriority | '')}
-          className="h-9 rounded-md border border-gray-300 bg-white px-3 text-sm shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-        >
-          {PRIORITY_OPTIONS.map(opt => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
+          <Select
+            value={priorityFilter}
+            onValueChange={(v) => setPriorityFilter(v as MaintenancePriority | '')}
+          >
+            <SelectTrigger className="w-44">
+              <SelectValue placeholder="All priorities" />
+            </SelectTrigger>
+            <SelectContent>
+              {PRIORITY_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value || '_all'}>
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <Link href="/tenant/maintenance/new">
+          <Button>
+            <Plus className="h-4 w-4" />
+            Submit Request
+          </Button>
+        </Link>
       </div>
 
       <DataTable
         columns={columns}
         data={requests}
         isLoading={loadingMaintenance}
-        rowKey={r => r.id}
-        onRowClick={row => router.push(`/tenant/maintenance/${row.id}`)}
+        rowKey={(r) => r.id}
+        onRowClick={(row) => router.push(`/tenant/maintenance/${row.id}`)}
         emptyMessage="No maintenance requests found."
       />
     </div>

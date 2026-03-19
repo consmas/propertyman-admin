@@ -1,20 +1,37 @@
 'use client'
 import { useTenantProfile } from '@/hooks/use-tenant'
 import { useAuth } from '@/hooks/use-auth'
-import { PageHeader } from '@/components/shared/page-header'
+import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { ErrorState } from '@/components/shared/error-state'
+import { PageLoader } from '@/components/shared/loading-spinner'
+import { formatCurrency, getInitials } from '@/lib/utils'
+
+function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div
+      className="flex items-start justify-between gap-4 py-3 last:border-0"
+      style={{ borderBottom: '1px solid var(--border-default)' }}
+    >
+      <span
+        className="text-[12px] font-bold uppercase tracking-[0.07em] shrink-0 mt-0.5 min-w-[130px]"
+        style={{ color: 'var(--text-tertiary)' }}
+      >
+        {label}
+      </span>
+      <span className="text-[13px] font-medium text-right" style={{ color: 'var(--text-primary)' }}>
+        {children}
+      </span>
+    </div>
+  )
+}
 
 export default function TenantProfilePage() {
   const { user } = useAuth()
   const { data: tenant, isLoading, isError } = useTenantProfile()
 
-  if (isLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center text-gray-400 text-sm">
-        Loading profile…
-      </div>
-    )
-  }
+  if (isLoading) return <PageLoader />
 
   if (isError || !tenant) {
     return (
@@ -25,64 +42,85 @@ export default function TenantProfilePage() {
     )
   }
 
-  return (
-    <div className="space-y-6">
-      <PageHeader title="My Profile" description="Your personal and account information" />
+  const rawName = tenant.full_name ?? `${tenant.first_name ?? ''} ${tenant.last_name ?? ''}`.trim()
+  const name = rawName || '\u2014'
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        {/* Personal info */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6 space-y-4">
-          <h2 className="text-sm font-semibold text-gray-900">Personal Information</h2>
-          <div className="space-y-3">
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Full Name</p>
-              <p className="mt-1 text-sm text-gray-900">{tenant.full_name ?? (`${tenant.first_name ?? ''} ${tenant.last_name ?? ''}`.trim() || '—')}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Email</p>
-              <p className="mt-1 text-sm text-gray-900">{tenant.email || '—'}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Phone</p>
-              <p className="mt-1 text-sm text-gray-900">{tenant.phone || '—'}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">National ID</p>
-              <p className="mt-1 text-sm text-gray-900">{tenant.national_id || '—'}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Status</p>
-              <p className="mt-1 text-sm text-gray-900 capitalize">{tenant.status}</p>
-            </div>
+  return (
+    <div className="fade-up space-y-6 max-w-3xl">
+      {/* Profile hero */}
+      <Card className="p-6">
+        <div className="flex items-center gap-4">
+          <Avatar className="h-16 w-16 rounded-2xl">
+            <AvatarFallback
+              className="rounded-2xl text-xl font-bold"
+              style={{
+                background: 'linear-gradient(135deg, var(--brand-600), var(--brand-400))',
+                color: '#fff',
+              }}
+            >
+              {getInitials(name)}
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <h2
+              className="font-display text-[20px] font-bold leading-tight"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              {name}
+            </h2>
+            <p className="text-[13px] mt-0.5" style={{ color: 'var(--text-secondary)' }}>
+              {tenant.email}
+            </p>
+            <Badge
+              variant={tenant.status === 'active' ? 'success' : 'gray'}
+              className="mt-2"
+            >
+              {tenant.status}
+            </Badge>
           </div>
         </div>
+      </Card>
+
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        {/* Personal info */}
+        <Card className="p-6">
+          <h3
+            className="font-display text-[15px] font-semibold mb-4"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            Personal Information
+          </h3>
+          <DetailRow label="Full Name">{name}</DetailRow>
+          <DetailRow label="Email">{tenant.email || '—'}</DetailRow>
+          <DetailRow label="Phone">{tenant.phone || '—'}</DetailRow>
+          <DetailRow label="National ID">{tenant.national_id || '—'}</DetailRow>
+          <DetailRow label="Outstanding">
+            <span
+              className="font-display font-bold"
+              style={{
+                color:
+                  (tenant.outstanding ?? 0) > 0 ? 'var(--error-500)' : 'var(--success-500)',
+              }}
+            >
+              {formatCurrency(tenant.outstanding ?? 0)}
+            </span>
+          </DetailRow>
+        </Card>
 
         {/* Account info */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6 space-y-4">
-          <h2 className="text-sm font-semibold text-gray-900">Account Information</h2>
-          <div className="space-y-3">
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Account Email</p>
-              <p className="mt-1 text-sm text-gray-900">{user?.email || '—'}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Account Name</p>
-              <p className="mt-1 text-sm text-gray-900">{user?.full_name || '—'}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Role</p>
-              <p className="mt-1 text-sm text-gray-900 capitalize">{user?.role?.replace(/_/g, ' ') || '—'}</p>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">Outstanding Balance</p>
-              <p className="mt-1 text-sm font-semibold text-gray-900">
-                {typeof tenant.outstanding === 'number'
-                  ? new Intl.NumberFormat('en-GH', { style: 'currency', currency: 'GHS' }).format(tenant.outstanding)
-                  : '—'}
-              </p>
-            </div>
-          </div>
-        </div>
+        <Card className="p-6">
+          <h3
+            className="font-display text-[15px] font-semibold mb-4"
+            style={{ color: 'var(--text-primary)' }}
+          >
+            Account Information
+          </h3>
+          <DetailRow label="Account Email">{user?.email || '—'}</DetailRow>
+          <DetailRow label="Account Name">{user?.full_name || '—'}</DetailRow>
+          <DetailRow label="Role">
+            <span className="capitalize">{user?.role?.replace(/_/g, ' ') || '—'}</span>
+          </DetailRow>
+        </Card>
       </div>
     </div>
   )
