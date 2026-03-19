@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Sidebar } from '@/components/layout/sidebar'
 import { TopNav } from '@/components/layout/top-nav'
 import { useAuth } from '@/hooks/use-auth'
@@ -47,8 +47,13 @@ function AppShell({ children }: { children: React.ReactNode }) {
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { isLoading, isHydrated } = useAuth()
+  const [mounted, setMounted] = useState(false)
 
-  if (!isHydrated || isLoading) {
+  useEffect(() => { setMounted(true) }, [])
+
+  // Keep server and initial client render identical to avoid hydration mismatch.
+  // After mount, switch to the real shell (client-only update, no hydration involved).
+  if (!mounted || !isHydrated || isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-[var(--surface-secondary)]">
         <PageLoader />

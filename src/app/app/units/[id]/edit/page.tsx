@@ -64,7 +64,7 @@ function EditUnitInner() {
         name: data.data.name ?? `Unit ${data.data.unit_number}`,
         unit_type: (data.data.unit_type as FormValues['unit_type']) ?? 'one_bedroom_self_contain',
         status: normalizeUnitStatus(data.data.status),
-        monthly_rent_ghs: (data.data.monthly_rent ?? 0).toFixed(2),
+        monthly_rent_ghs: Number(data.data.monthly_rent ?? 0).toFixed(2),
       })
     }
   }, [data, reset])

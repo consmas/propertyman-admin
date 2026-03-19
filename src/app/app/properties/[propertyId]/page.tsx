@@ -3,7 +3,7 @@
 import { use, useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { usePropertyStore } from '@/store/property'
-import { ArrowLeft, Building2, Home, Users } from 'lucide-react'
+import { ArrowLeft, Building2, Check, Copy, Home, Users } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { propertiesEndpoints } from '@/lib/api/endpoints/properties'
@@ -26,6 +26,13 @@ export default function AppPropertyDetailPage({
   const queryClient = useQueryClient()
   const setCurrentProperty = usePropertyStore(s => s.setCurrentProperty)
   const [activeStatus, setActiveStatus] = useState<'active' | 'inactive'>('active')
+  const [codeCopied, setCodeCopied] = useState(false)
+
+  const copyCode = (code: string) => {
+    navigator.clipboard.writeText(code)
+    setCodeCopied(true)
+    setTimeout(() => setCodeCopied(false), 2000)
+  }
 
   const { data, isLoading } = useQuery({
     queryKey: ['app-property', propertyId],
@@ -141,6 +148,38 @@ export default function AppPropertyDetailPage({
               <p className="mt-1 text-sm text-gray-900">{value}</p>
             </div>
           ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Tenant Invite Code</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <p className="text-sm text-gray-500">
+            Share this code with tenants so they can self-register and link their account to this property.
+          </p>
+          {property.code ? (
+            <div className="flex items-center gap-3">
+              <code className="flex-1 rounded-md border bg-gray-50 px-4 py-2.5 font-mono text-lg font-bold tracking-widest text-gray-900 select-all">
+                {property.code}
+              </code>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => copyCode(property.code!)}
+                className="shrink-0 gap-1.5"
+              >
+                {codeCopied ? (
+                  <><Check className="h-3.5 w-3.5 text-green-600" /><span className="text-green-600">Copied</span></>
+                ) : (
+                  <><Copy className="h-3.5 w-3.5" />Copy</>
+                )}
+              </Button>
+            </div>
+          ) : (
+            <p className="text-sm text-amber-600 font-medium">No code set for this property.</p>
+          )}
         </CardContent>
       </Card>
     </div>

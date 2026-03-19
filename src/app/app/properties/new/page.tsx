@@ -109,9 +109,12 @@ function NewPropertyInner() {
           <div className="space-y-1">
             <input
               {...register('code')}
-              placeholder="Property code (e.g. ELS-HO-001)"
+              placeholder="Invite code (e.g. ELS-HO-001)"
               className="h-9 w-full rounded-md border px-3 text-sm"
             />
+            <p className="text-xs text-gray-500">
+              Tenants enter this code when self-registering to link their account to this property.
+            </p>
             {errors.code && <p className="text-xs text-red-600">{errors.code.message}</p>}
           </div>
 

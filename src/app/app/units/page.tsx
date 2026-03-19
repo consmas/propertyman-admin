@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
-import { Plus } from 'lucide-react'
+import { Layers, Plus } from 'lucide-react'
 import { unitsEndpoints } from '@/lib/api/endpoints/units'
 import { useCurrentPropertyId } from '@/hooks/use-property'
 import { RoleGate } from '@/components/shared/role-gate'
@@ -51,7 +51,16 @@ function UnitsInner() {
       <PageHeader
         title="Units"
         description="Property units"
-        actions={<Link href="/app/units/new"><Button><Plus className="h-4 w-4" />New Unit</Button></Link>}
+        actions={
+          <div className="flex gap-2">
+            <Link href="/app/units/bulk">
+              <Button variant="outline"><Layers className="h-4 w-4" />Bulk Add</Button>
+            </Link>
+            <Link href="/app/units/new">
+              <Button><Plus className="h-4 w-4" />New Unit</Button>
+            </Link>
+          </div>
+        }
       />
 
       <DataTable

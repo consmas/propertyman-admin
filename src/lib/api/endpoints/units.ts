@@ -3,6 +3,7 @@ import axios from 'axios'
 import type {
   ApiResponse,
   ApiUnit,
+  BulkCreateUnitRequest,
   CreateUnitRequest,
   ListUnitsParams,
   UpdateUnitRequest,
@@ -32,6 +33,11 @@ export const unitsEndpoints = {
       }
       throw error
     }
+  },
+
+  bulkCreate: async (payload: BulkCreateUnitRequest): Promise<ApiResponse<ApiUnit[]>> => {
+    const res = await apiClient.post('/units/bulk_create', payload)
+    return unwrapApiResponse<ApiUnit[]>(res.data)
   },
 
   update: async (id: string, payload: UpdateUnitRequest): Promise<ApiResponse<ApiUnit>> => {

@@ -243,6 +243,17 @@ export interface UpdateUnitRequest {
   unit: Partial<CreateUnitRequest['unit']>
 }
 
+export interface BulkCreateUnitRequest {
+  property_id: UUID
+  units: Array<{
+    unit_number: string
+    name?: string
+    unit_type: string
+    status: string
+    monthly_rent: number
+  }>
+}
+
 // ─── Tenants ──────────────────────────────────────────────────────────────────
 
 export interface ApiTenant {

@@ -9,7 +9,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { ArrowLeft } from 'lucide-react'
 import { unitsEndpoints } from '@/lib/api/endpoints/units'
-import { useCurrentPropertyId } from '@/hooks/use-property'
+import { useCurrentProperty, useCurrentPropertyId } from '@/hooks/use-property'
 import { getErrorMessage } from '@/lib/errors'
 import { RoleGate } from '@/components/shared/role-gate'
 import { PageHeader } from '@/components/shared/page-header'
@@ -38,6 +38,7 @@ type FormValues = z.infer<typeof schema>
 function NewUnitInner() {
   const router = useRouter()
   const propertyId = useCurrentPropertyId()
+  const currentProperty = useCurrentProperty()
   const queryClient = useQueryClient()
 
   const { register, handleSubmit, setError, formState: { errors } } = useForm<FormValues>({
@@ -79,7 +80,10 @@ function NewUnitInner() {
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center gap-3">
         <Link href="/app/units"><Button variant="ghost" size="icon"><ArrowLeft className="h-4 w-4" /></Button></Link>
-        <PageHeader title="New Unit" description="Add unit to selected property" />
+        <PageHeader
+          title="New Unit"
+          description={currentProperty ? `Adding to: ${currentProperty.name}` : 'Add unit to selected property'}
+        />
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
