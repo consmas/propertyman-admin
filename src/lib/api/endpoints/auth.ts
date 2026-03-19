@@ -4,6 +4,7 @@ import type {
   LoginResponseData,
   RefreshRequest,
   LogoutRequest,
+  RegisterRequest,
 } from '@/types/api'
 
 /** Extract attributes from JSON:API auth_session resource */
@@ -32,6 +33,15 @@ export const authEndpoints = {
   refresh: async (refreshToken: string): Promise<LoginResponseData> => {
     const body: RefreshRequest = { auth: { refresh_token: refreshToken } }
     const res = await apiClient.post('/auth/refresh', body)
+    return extractAuthAttributes(res.data)
+  },
+
+  /**
+   * POST /api/v1/auth/register
+   * Body: { auth: { full_name, email, password, phone, national_id?, property_code } }
+   */
+  register: async (data: RegisterRequest): Promise<LoginResponseData> => {
+    const res = await apiClient.post('/auth/register', data)
     return extractAuthAttributes(res.data)
   },
 

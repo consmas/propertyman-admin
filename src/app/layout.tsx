@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
-import { DM_Sans, JetBrains_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/providers";
 
-const dmSans = DM_Sans({
-  variable: "--font-dm-sans",
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: "--font-plus-jakarta",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 const jetBrainsMono = JetBrains_Mono({
@@ -43,7 +50,8 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${dmSans.variable} ${jetBrainsMono.variable} antialiased`}
+        className={`${plusJakarta.variable} ${outfit.variable} ${jetBrainsMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-[var(--brand-600)] focus:px-3 focus:py-2 focus:text-white">
           Skip to content

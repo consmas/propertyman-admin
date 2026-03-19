@@ -218,22 +218,22 @@ export default function LeaseDetailPage({
           title="Monthly Rent"
           value={formatCurrency(lease.rent)}
           icon={DollarSign}
-          iconBg="bg-green-50"
-          iconColor="text-green-600"
+          
+          accent="#10b981"
         />
         <KpiCard
           title="Security Deposit"
           value={formatCurrency(lease.security_deposit)}
           icon={DollarSign}
-          iconBg="bg-blue-50"
-          iconColor="text-blue-600"
+          
+          accent="#3b82f6"
         />
         <KpiCard
           title="Plan"
           value={`${lease.plan_months} months`}
           icon={Calendar}
-          iconBg="bg-purple-50"
-          iconColor="text-purple-600"
+          
+          accent="#8b5cf6"
         />
       </div>
 

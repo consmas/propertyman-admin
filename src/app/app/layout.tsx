@@ -36,7 +36,7 @@ function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex flex-1 flex-col overflow-hidden min-w-0">
         <TopNav onMenuClick={() => setSidebarOpen(true)} />
         <main id="main-content" className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-[1440px] space-y-6 p-4 md:p-6">
+          <div className="mx-auto max-w-[1400px] space-y-6 p-5 md:p-7">
             {children}
           </div>
         </main>
@@ -50,7 +50,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (!isHydrated || isLoading) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex h-screen items-center justify-center bg-[var(--surface-secondary)]">
         <PageLoader />
       </div>
     )

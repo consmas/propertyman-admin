@@ -1,18 +1,18 @@
 'use client'
 
 import { useQueries } from '@tanstack/react-query'
-import { Building2, Home, FileText, Wrench } from 'lucide-react'
+import { Building2, Home, FileText, Wrench, CreditCard, TrendingUp } from 'lucide-react'
 import { useCurrentPropertyId } from '@/hooks/use-property'
 import { propertiesEndpoints } from '@/lib/api/endpoints/properties'
 import { unitsEndpoints } from '@/lib/api/endpoints/units'
 import { invoicesEndpoints } from '@/lib/api/endpoints/invoices'
 import { maintenanceEndpoints } from '@/lib/api/endpoints/maintenance'
 import { paymentsEndpoints } from '@/lib/api/endpoints/payments'
-import { PageHeader } from '@/components/shared/page-header'
 import { KpiCard } from '@/components/shared/kpi-card'
-import { Card } from '@/components/ui/card'
+import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { ErrorState } from '@/components/shared/error-state'
 import { StatusBadge } from '@/components/shared/status-badge'
+import { Skeleton } from '@/components/ui/skeleton'
 import { formatCurrency, formatDate } from '@/lib/utils'
 
 export default function AppDashboardPage() {
@@ -37,94 +37,177 @@ export default function AppDashboardPage() {
   const maintenance = maintenanceQ.data?.data ?? []
   const payments = paymentsQ.data?.data ?? []
 
+  const occupiedUnits = units.filter((u) => u.status === 'occupied').length
+  const occupancyRate = units.length > 0 ? Math.round((occupiedUnits / units.length) * 100) : 0
   const openInvoices = invoices.filter((inv) => ['issued', 'partial', 'overdue'].includes(inv.status))
   const pendingMaintenance = maintenance.filter((req) => ['open', 'in_progress'].includes(req.status))
-  const selectedProperty = propertyId ? properties.find((p) => p.id === propertyId) : null
 
   return (
-    <div className="space-y-6">
-      <PageHeader
-        title="Dashboard"
-        kicker="Operations Overview"
-        description={
-          selectedProperty
-            ? `${selectedProperty.name} • ${selectedProperty.city}`
-            : 'Portfolio overview'
-        }
-      />
-
+    <div className="space-y-7">
+      {/* KPI Row */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard title="Properties" value={properties.length} icon={Building2} isLoading={propertiesQ.isLoading} />
-        <KpiCard title="Units" value={units.length} icon={Home} isLoading={unitsQ.isLoading} />
-        <KpiCard title="Open Invoices" value={openInvoices.length} icon={FileText} isLoading={invoicesQ.isLoading} />
-        <KpiCard title="Pending Maintenance" value={pendingMaintenance.length} icon={Wrench} isLoading={maintenanceQ.isLoading} />
+        <KpiCard
+          title="Total Properties"
+          value={propertiesQ.isLoading ? '—' : properties.length}
+          subtitle={properties.length > 0 ? `${properties.length} managed` : undefined}
+          icon={Building2}
+          accent="#8b5cf6"
+          chartData={[2, 2, 3, properties.length]}
+          isLoading={propertiesQ.isLoading}
+          delay={0}
+        />
+        <KpiCard
+          title="Occupancy Rate"
+          value={unitsQ.isLoading ? '—' : `${occupancyRate}%`}
+          subtitle={units.length > 0 ? `${occupiedUnits} of ${units.length} units` : undefined}
+          icon={Home}
+          accent="#10b981"
+          chartData={[70, 75, 80, occupancyRate]}
+          isLoading={unitsQ.isLoading}
+          delay={80}
+        />
+        <KpiCard
+          title="Open Invoices"
+          value={invoicesQ.isLoading ? '—' : openInvoices.length}
+          subtitle={openInvoices.length > 0 ? `${openInvoices.length} require attention` : 'All settled'}
+          icon={FileText}
+          accent="#f59e0b"
+          chartData={[5, 8, 6, openInvoices.length]}
+          isLoading={invoicesQ.isLoading}
+          delay={160}
+        />
+        <KpiCard
+          title="Pending Maintenance"
+          value={maintenanceQ.isLoading ? '—' : pendingMaintenance.length}
+          subtitle={pendingMaintenance.length > 0 ? `${pendingMaintenance.length} open requests` : 'All resolved'}
+          icon={Wrench}
+          accent="#ef4444"
+          chartData={[10, 8, 9, pendingMaintenance.length]}
+          isLoading={maintenanceQ.isLoading}
+          delay={240}
+        />
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <Card className="p-4">
-          <div className="mb-3 flex items-center justify-between border-b border-[var(--border-default)] pb-3">
-            <h3 className="text-sm font-semibold text-[var(--text-primary)]">Latest Payments</h3>
-            <p className="text-xs text-[var(--text-tertiary)]">{payments.length} total</p>
-          </div>
-          {payments.length === 0 && <p className="text-sm text-[var(--text-secondary)]">No payments yet.</p>}
-          {payments.slice(0, 5).map((payment) => (
-            <div
-              key={payment.id}
-              className="flex items-center justify-between border-b border-[var(--border-default)] py-2.5 text-sm last:border-b-0"
-            >
-              <div className="min-w-0">
-                <p className="truncate font-semibold text-[var(--text-primary)]">{payment.reference}</p>
-                <p className="text-xs text-[var(--text-tertiary)]">
-                  {payment.payment_method.replace('_', ' ')} • {formatDate(payment.paid_at, 'MMM d, yyyy HH:mm')}
+      {/* Activity Row */}
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+        {/* Latest Payments */}
+        <Card className="fade-up overflow-hidden" style={{ animationDelay: '300ms' }}>
+          <CardHeader className="flex-row items-center justify-between space-y-0 border-b border-[var(--border-default)] pb-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl" style={{ background: '#10b98118', color: '#10b981' }}>
+                <CreditCard className="h-4 w-4" />
+              </div>
+              <CardTitle className="text-[15px]">Latest Payments</CardTitle>
+            </div>
+            <span className="text-[12px] font-bold text-[var(--text-tertiary)]">
+              {paymentsQ.isLoading ? '—' : `${payments.length} total`}
+            </span>
+          </CardHeader>
+          <div className="divide-y divide-[var(--border-default)]">
+            {paymentsQ.isLoading && Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex items-center justify-between px-6 py-3.5">
+                <div className="space-y-1.5">
+                  <Skeleton className="h-3.5 w-28" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+                <Skeleton className="h-4 w-16" />
+              </div>
+            ))}
+            {!paymentsQ.isLoading && payments.length === 0 && (
+              <p className="px-6 py-6 text-sm text-[var(--text-secondary)]">No payments yet.</p>
+            )}
+            {!paymentsQ.isLoading && payments.slice(0, 5).map((payment) => (
+              <div key={payment.id} className="flex items-center justify-between px-6 py-3.5">
+                <div className="min-w-0">
+                  <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{payment.reference}</p>
+                  <p className="text-[11px] text-[var(--text-tertiary)] mt-0.5">
+                    {payment.payment_method.replace('_', ' ')} · {formatDate(payment.paid_at, 'MMM d, yyyy')}
+                  </p>
+                </div>
+                <p className="font-display text-[13px] font-bold text-[var(--text-primary)] ml-3 shrink-0">
+                  {formatCurrency(payment.amount)}
                 </p>
               </div>
-              <p className="font-mono font-semibold text-[var(--text-primary)]">{formatCurrency(payment.amount)}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </Card>
 
-        <Card className="p-4">
-          <div className="mb-3 flex items-center justify-between border-b border-[var(--border-default)] pb-3">
-            <h3 className="text-sm font-semibold text-[var(--text-primary)]">Latest Maintenance</h3>
-            <p className="text-xs text-[var(--text-tertiary)]">{maintenance.length} total</p>
-          </div>
-          {maintenance.length === 0 && (
-            <p className="text-sm text-[var(--text-secondary)]">No maintenance requests.</p>
-          )}
-          {maintenance.slice(0, 5).map((item) => (
-            <div key={item.id} className="border-b border-[var(--border-default)] py-2.5 text-sm last:border-b-0">
-              <p className="truncate font-semibold text-[var(--text-primary)]">{item.title}</p>
-              <div className="mt-1 flex items-center gap-2">
-                <StatusBadge status={item.status} type="maintenance" />
-                <StatusBadge status={item.priority} type="maintenance_priority" />
+        {/* Latest Maintenance */}
+        <Card className="fade-up overflow-hidden" style={{ animationDelay: '380ms' }}>
+          <CardHeader className="flex-row items-center justify-between space-y-0 border-b border-[var(--border-default)] pb-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl" style={{ background: '#ef444418', color: '#ef4444' }}>
+                <Wrench className="h-4 w-4" />
               </div>
+              <CardTitle className="text-[15px]">Maintenance</CardTitle>
             </div>
-          ))}
-        </Card>
-
-        <Card className="p-4">
-          <div className="mb-3 flex items-center justify-between border-b border-[var(--border-default)] pb-3">
-            <h3 className="text-sm font-semibold text-[var(--text-primary)]">Latest Invoices</h3>
-            <p className="text-xs text-[var(--text-tertiary)]">{invoices.length} total</p>
-          </div>
-          {invoices.length === 0 && <p className="text-sm text-[var(--text-secondary)]">No invoices yet.</p>}
-          {invoices.slice(0, 5).map((invoice) => (
-            <div
-              key={invoice.id}
-              className="flex items-center justify-between border-b border-[var(--border-default)] py-2.5 text-sm last:border-b-0"
-            >
-              <div className="min-w-0">
-                <p className="truncate font-semibold text-[var(--text-primary)]">{invoice.invoice_number}</p>
-                <p className="text-xs text-[var(--text-tertiary)]">Due {formatDate(invoice.due_date)}</p>
-                <div className="mt-1">
-                  <StatusBadge status={invoice.status} type="invoice" />
+            <span className="text-[12px] font-bold text-[var(--text-tertiary)]">
+              {maintenanceQ.isLoading ? '—' : `${maintenance.length} total`}
+            </span>
+          </CardHeader>
+          <div className="divide-y divide-[var(--border-default)]">
+            {maintenanceQ.isLoading && Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="px-6 py-3.5 space-y-1.5">
+                <Skeleton className="h-3.5 w-3/4" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+            ))}
+            {!maintenanceQ.isLoading && maintenance.length === 0 && (
+              <p className="px-6 py-6 text-sm text-[var(--text-secondary)]">No maintenance requests.</p>
+            )}
+            {!maintenanceQ.isLoading && maintenance.slice(0, 5).map((item) => (
+              <div key={item.id} className="px-6 py-3.5">
+                <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{item.title}</p>
+                <div className="mt-1.5 flex items-center gap-2">
+                  <StatusBadge status={item.status} type="maintenance" />
+                  <StatusBadge status={item.priority} type="maintenance_priority" />
                 </div>
               </div>
-              <p className="font-mono font-semibold text-[var(--text-primary)]">
-                {formatCurrency(invoice.balance)}
-              </p>
+            ))}
+          </div>
+        </Card>
+
+        {/* Latest Invoices */}
+        <Card className="fade-up overflow-hidden" style={{ animationDelay: '460ms' }}>
+          <CardHeader className="flex-row items-center justify-between space-y-0 border-b border-[var(--border-default)] pb-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl" style={{ background: '#f59e0b18', color: '#f59e0b' }}>
+                <TrendingUp className="h-4 w-4" />
+              </div>
+              <CardTitle className="text-[15px]">Invoices</CardTitle>
             </div>
-          ))}
+            <span className="text-[12px] font-bold text-[var(--text-tertiary)]">
+              {invoicesQ.isLoading ? '—' : `${invoices.length} total`}
+            </span>
+          </CardHeader>
+          <div className="divide-y divide-[var(--border-default)]">
+            {invoicesQ.isLoading && Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="flex items-center justify-between px-6 py-3.5">
+                <div className="space-y-1.5">
+                  <Skeleton className="h-3.5 w-28" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+                <Skeleton className="h-4 w-16" />
+              </div>
+            ))}
+            {!invoicesQ.isLoading && invoices.length === 0 && (
+              <p className="px-6 py-6 text-sm text-[var(--text-secondary)]">No invoices yet.</p>
+            )}
+            {!invoicesQ.isLoading && invoices.slice(0, 5).map((invoice) => (
+              <div key={invoice.id} className="flex items-center justify-between px-6 py-3.5">
+                <div className="min-w-0">
+                  <p className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{invoice.invoice_number}</p>
+                  <div className="mt-1 flex items-center gap-2">
+                    <StatusBadge status={invoice.status} type="invoice" />
+                    <span className="text-[11px] text-[var(--text-tertiary)]">Due {formatDate(invoice.due_date)}</span>
+                  </div>
+                </div>
+                <p className="font-display text-[13px] font-bold text-[var(--text-primary)] ml-3 shrink-0">
+                  {formatCurrency(invoice.balance)}
+                </p>
+              </div>
+            ))}
+          </div>
         </Card>
       </div>
     </div>

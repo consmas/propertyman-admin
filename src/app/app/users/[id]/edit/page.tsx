@@ -18,14 +18,26 @@ import { Button } from '@/components/ui/button'
 import { PageLoader } from '@/components/shared/loading-spinner'
 import { ErrorState } from '@/components/shared/error-state'
 
-const schema = z.object({
+const profileSchema = z.object({
   full_name: z.string().min(2, 'Name is required'),
+  email: z.string().email('Valid email required'),
   role: z.enum(['owner', 'admin', 'property_manager', 'accountant', 'caretaker', 'tenant']),
   phone: z.string().optional(),
   status: z.enum(['active', 'inactive']),
 })
 
-type FormValues = z.infer<typeof schema>
+const passwordSchema = z
+  .object({
+    password: z.string().min(8, 'Password must be at least 8 characters'),
+    password_confirmation: z.string(),
+  })
+  .refine((d) => d.password === d.password_confirmation, {
+    message: 'Passwords do not match',
+    path: ['password_confirmation'],
+  })
+
+type ProfileValues = z.infer<typeof profileSchema>
+type PasswordValues = z.infer<typeof passwordSchema>
 
 function EditUserInner() {
   const router = useRouter()
@@ -37,73 +49,163 @@ function EditUserInner() {
     queryFn: () => usersEndpoints.get(params.id),
   })
 
-  const {
-    register,
-    reset,
-    handleSubmit,
-    setError,
-    formState: { errors },
-  } = useForm<FormValues>({ resolver: zodResolver(schema) })
+  const profileForm = useForm<ProfileValues>({ resolver: zodResolver(profileSchema) })
+  const passwordForm = useForm<PasswordValues>({ resolver: zodResolver(passwordSchema) })
 
   useEffect(() => {
     if (data?.data) {
-      reset({
+      profileForm.reset({
         full_name: data.data.full_name,
+        email: data.data.email,
         role: data.data.role,
         phone: data.data.phone ?? '',
         status: data.data.status ?? 'active',
       })
     }
-  }, [data, reset])
+  }, [data]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: (values: FormValues) => usersEndpoints.update(params.id, { user: values }),
+  const updateProfile = useMutation({
+    mutationFn: (values: ProfileValues) => usersEndpoints.update(params.id, { user: values }),
     onSuccess: () => {
-      toast.success('User updated')
+      toast.success('Profile updated')
       queryClient.invalidateQueries({ queryKey: ['users'] })
       router.push(`/app/users/${params.id}`)
     },
     onError: (error) => {
-      setError('root.server', { message: getErrorMessage(error) })
+      profileForm.setError('root.server', { message: getErrorMessage(error) })
+    },
+  })
+
+  const updatePassword = useMutation({
+    mutationFn: (values: PasswordValues) => usersEndpoints.update(params.id, { user: values }),
+    onSuccess: () => {
+      toast.success('Password changed')
+      passwordForm.reset()
+    },
+    onError: (error) => {
+      passwordForm.setError('root.server', { message: getErrorMessage(error) })
     },
   })
 
   if (isLoading) return <PageLoader />
   if (isError || !data?.data) return <ErrorState onRetry={() => refetch()} message="Failed to load user" />
 
+  const { errors: pe } = profileForm.formState
+  const { errors: we } = passwordForm.formState
+
   return (
     <div className="space-y-6 max-w-2xl">
       <div className="flex items-center gap-3">
-        <Link href={`/app/users/${params.id}`}><Button variant="ghost" size="icon"><ArrowLeft className="h-4 w-4" /></Button></Link>
+        <Link href={`/app/users/${params.id}`}>
+          <Button variant="ghost" size="icon"><ArrowLeft className="h-4 w-4" /></Button>
+        </Link>
         <PageHeader title="Edit User" description={data.data.email} />
       </div>
 
-      <form onSubmit={handleSubmit((values) => mutate(values))} className="space-y-4">
+      {/* ── Profile ── */}
+      <form onSubmit={profileForm.handleSubmit((v) => updateProfile.mutate(v))} className="space-y-4">
         <Card className="p-6 space-y-4">
-          <input {...register('full_name')} placeholder="Full name" className="h-9 w-full rounded-md border px-3 text-sm" />
-          {errors.full_name && <p className="text-xs text-red-600">{errors.full_name.message}</p>}
+          <h2 className="text-sm font-semibold text-gray-900">Profile Information</h2>
 
-          <select {...register('role')} className="h-9 w-full rounded-md border px-3 text-sm">
-            <option value="owner">Owner</option>
-            <option value="admin">Admin</option>
-            <option value="property_manager">Property Manager</option>
-            <option value="accountant">Accountant</option>
-            <option value="caretaker">Caretaker</option>
-            <option value="tenant">Tenant</option>
-          </select>
+          <div className="space-y-1">
+            <label className="text-xs text-gray-500">Full Name</label>
+            <input
+              {...profileForm.register('full_name')}
+              placeholder="Full name"
+              className="h-9 w-full rounded-md border px-3 text-sm"
+            />
+            {pe.full_name && <p className="text-xs text-red-600">{pe.full_name.message}</p>}
+          </div>
 
-          <select {...register('status')} className="h-9 w-full rounded-md border px-3 text-sm">
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
+          <div className="space-y-1">
+            <label className="text-xs text-gray-500">Email</label>
+            <input
+              {...profileForm.register('email')}
+              type="email"
+              placeholder="Email address"
+              className="h-9 w-full rounded-md border px-3 text-sm"
+            />
+            {pe.email && <p className="text-xs text-red-600">{pe.email.message}</p>}
+          </div>
 
-          <input {...register('phone')} placeholder="Phone" className="h-9 w-full rounded-md border px-3 text-sm" />
-          {errors.root?.server && <p className="text-sm text-red-600">{errors.root.server.message}</p>}
+          <div className="space-y-1">
+            <label className="text-xs text-gray-500">Phone</label>
+            <input
+              {...profileForm.register('phone')}
+              placeholder="Phone number"
+              className="h-9 w-full rounded-md border px-3 text-sm"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label className="text-xs text-gray-500">Role</label>
+              <select {...profileForm.register('role')} className="h-9 w-full rounded-md border px-3 text-sm">
+                <option value="owner">Owner</option>
+                <option value="admin">Admin</option>
+                <option value="property_manager">Property Manager</option>
+                <option value="accountant">Accountant</option>
+                <option value="caretaker">Caretaker</option>
+                <option value="tenant">Tenant</option>
+              </select>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-xs text-gray-500">Status</label>
+              <select {...profileForm.register('status')} className="h-9 w-full rounded-md border px-3 text-sm">
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          {pe.root?.server && <p className="text-sm text-red-600">{pe.root.server.message}</p>}
         </Card>
 
         <div className="flex justify-end gap-2">
           <Link href={`/app/users/${params.id}`}><Button variant="outline" type="button">Cancel</Button></Link>
-          <Button type="submit" loading={isPending}>Save Changes</Button>
+          <Button type="submit" loading={updateProfile.isPending}>Save Profile</Button>
+        </div>
+      </form>
+
+      {/* ── Change Password ── */}
+      <form onSubmit={passwordForm.handleSubmit((v) => updatePassword.mutate(v))} className="space-y-4">
+        <Card className="p-6 space-y-4">
+          <h2 className="text-sm font-semibold text-gray-900">Change Password</h2>
+
+          <div className="space-y-1">
+            <label className="text-xs text-gray-500">New Password</label>
+            <input
+              {...passwordForm.register('password')}
+              type="password"
+              placeholder="Min. 8 characters"
+              autoComplete="new-password"
+              className="h-9 w-full rounded-md border px-3 text-sm"
+            />
+            {we.password && <p className="text-xs text-red-600">{we.password.message}</p>}
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs text-gray-500">Confirm New Password</label>
+            <input
+              {...passwordForm.register('password_confirmation')}
+              type="password"
+              placeholder="Repeat password"
+              autoComplete="new-password"
+              className="h-9 w-full rounded-md border px-3 text-sm"
+            />
+            {we.password_confirmation && (
+              <p className="text-xs text-red-600">{we.password_confirmation.message}</p>
+            )}
+          </div>
+
+          {we.root?.server && <p className="text-sm text-red-600">{we.root.server.message}</p>}
+        </Card>
+
+        <div className="flex justify-end">
+          <Button type="submit" loading={updatePassword.isPending} variant="outline">
+            Change Password
+          </Button>
         </div>
       </form>
     </div>

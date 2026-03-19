@@ -119,8 +119,8 @@ export default function MaintenanceDetailPage({
           value={formatDate(request.requested_at)}
           subtitle={formatRelativeDate(request.requested_at)}
           icon={Clock}
-          iconBg="bg-blue-50"
-          iconColor="text-blue-600"
+          
+          accent="#3b82f6"
         />
       </div>
 

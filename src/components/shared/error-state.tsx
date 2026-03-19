@@ -13,14 +13,14 @@ export function ErrorState({
   onRetry,
 }: ErrorStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl border border-[var(--border-default)] bg-[var(--surface-primary)] px-6 py-16 text-center">
-      <div className="mb-4 rounded-xl bg-[var(--error-50)] p-4 text-[var(--error-500)]">
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-[var(--border-default)] bg-[var(--surface-primary)] px-6 py-16 text-center">
+      <div className="mb-4 rounded-2xl bg-[var(--error-50)] p-4 text-[var(--error-500)]">
         <AlertTriangle className="h-8 w-8" />
       </div>
-      <h3 className="text-sm font-semibold text-[var(--text-primary)]">{title}</h3>
+      <h3 className="font-display text-[15px] font-semibold text-[var(--text-primary)]">{title}</h3>
       <p className="mt-1 text-sm text-[var(--text-secondary)]">{message}</p>
       {onRetry && (
-        <Button variant="outline" className="mt-4" onClick={onRetry}>
+        <Button variant="outline" className="mt-5" onClick={onRetry}>
           Try again
         </Button>
       )}

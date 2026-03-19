@@ -78,6 +78,18 @@ export interface LogoutRequest {
   }
 }
 
+/** POST /api/v1/auth/register body */
+export interface RegisterRequest {
+  auth: {
+    full_name: string
+    email: string
+    password: string
+    phone: string
+    national_id?: string
+    property_code: string
+  }
+}
+
 // ─── Users ────────────────────────────────────────────────────────────────────
 
 export interface ApiUser {
@@ -235,6 +247,7 @@ export interface UpdateUnitRequest {
 
 export interface ApiTenant {
   id: UUID
+  user_id?: UUID
   property_id?: UUID
   unit_id?: UUID
   first_name?: string
@@ -607,6 +620,44 @@ export interface ApiAuditLog {
 export interface ListAuditLogsParams extends PaginationParams {
   property_id?: UUID
   action?: string
+}
+
+// ─── Online Payments ──────────────────────────────────────────────────────────
+
+export type OnlinePaymentChannel = 'mobile_money' | 'card' | 'bank_transfer'
+export type OnlinePaymentPurpose = 'rent' | 'utilities' | 'mixed'
+export type OnlinePaymentStatus = 'pending' | 'succeeded' | 'failed' | 'cancelled' | 'expired'
+
+export interface ApiOnlinePayment {
+  id: UUID
+  property_id: UUID
+  tenant_id?: UUID
+  invoice_id?: UUID
+  payment_id?: UUID
+  reference: string
+  provider: string
+  channel: OnlinePaymentChannel
+  purpose: OnlinePaymentPurpose
+  status: OnlinePaymentStatus
+  amount: number
+  currency: string
+  checkout_url?: string
+  provider_reference?: string
+  expires_at?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface CreateOnlinePaymentRequest {
+  online_payment: {
+    property_id: UUID
+    tenant_id?: UUID
+    invoice_id?: UUID
+    amount: number
+    purpose: OnlinePaymentPurpose
+    channel: OnlinePaymentChannel
+    provider?: string
+  }
 }
 
 // ─── Billing Run ──────────────────────────────────────────────────────────────

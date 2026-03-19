@@ -68,7 +68,7 @@ export function DataTable<T>({
             <div className="relative max-w-xs">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-tertiary)]" />
               <input
-                className="h-10 w-full rounded-md border border-[var(--border-default)] bg-[var(--surface-primary)] pl-9 pr-3 text-sm text-[var(--text-primary)] shadow-sm placeholder:text-[var(--text-tertiary)] focus:border-[var(--border-focus)] focus:outline-none"
+                className="h-10 w-full rounded-[10px] border border-[var(--border-default)] bg-[var(--surface-primary)] pl-9 pr-3 text-sm text-[var(--text-primary)] shadow-sm placeholder:text-[var(--text-tertiary)] focus:border-[var(--border-focus)] focus:outline-none"
                 placeholder={searchPlaceholder}
                 value={searchValue}
                 onChange={handleSearch}
@@ -79,17 +79,17 @@ export function DataTable<T>({
         </div>
       )}
 
-      <div className="overflow-hidden rounded-xl border border-[var(--border-default)] bg-[var(--surface-primary)] shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-[var(--border-default)] bg-[var(--surface-primary)] shadow-sm">
         <div className="hidden overflow-x-auto md:block">
           <table className="min-w-full divide-y divide-[var(--border-default)]" role="grid">
-            <thead className="sticky top-0 z-10 bg-[var(--surface-tertiary)]">
+            <thead className="bg-[var(--surface-tertiary)]">
               <tr>
                 {columns.map(col => (
                   <th
                     key={col.key}
                     scope="col"
                     className={cn(
-                      'px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]',
+                      'px-5 py-3 text-left text-[11px] font-bold uppercase tracking-[0.06em] text-[var(--text-tertiary)]',
                       col.headerClassName
                     )}
                   >
@@ -98,12 +98,12 @@ export function DataTable<T>({
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-[var(--neutral-100)]">
+            <tbody className="divide-y divide-[var(--border-default)]">
               {isLoading
                 ? Array.from({ length: 5 }).map((_, i) => (
                     <tr key={i}>
                       {columns.map(col => (
-                        <td key={col.key} className="px-4 py-3">
+                        <td key={col.key} className="px-5 py-3.5">
                           <Skeleton className="h-4 w-3/4" />
                         </td>
                       ))}
@@ -113,7 +113,7 @@ export function DataTable<T>({
                     <tr
                       key={rowKey(row)}
                       className={cn(
-                        'h-12 transition-colors',
+                        'transition-colors',
                         onRowClick && 'cursor-pointer hover:bg-[var(--surface-secondary)]'
                       )}
                       onClick={() => onRowClick?.(row)}
@@ -121,7 +121,7 @@ export function DataTable<T>({
                       {columns.map(col => (
                         <td
                           key={col.key}
-                          className={cn('px-4 py-3 text-sm text-[var(--text-primary)]', col.className)}
+                          className={cn('px-5 py-3.5 text-sm text-[var(--text-primary)]', col.className)}
                         >
                           {col.render
                             ? col.render(row)
@@ -137,7 +137,7 @@ export function DataTable<T>({
         {/* Mobile card list */}
         <div className="space-y-3 p-3 md:hidden">
           {isLoading && Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="rounded-lg border border-[var(--border-default)] p-3">
+            <div key={i} className="rounded-xl border border-[var(--border-default)] p-3">
               <Skeleton className="mb-2 h-4 w-1/2" />
               <Skeleton className="mb-1 h-3 w-full" />
               <Skeleton className="h-3 w-3/4" />
@@ -147,7 +147,7 @@ export function DataTable<T>({
             <button
               key={rowKey(row)}
               className={cn(
-                'w-full rounded-lg border border-[var(--border-default)] bg-[var(--surface-primary)] p-3 text-left',
+                'w-full rounded-xl border border-[var(--border-default)] bg-[var(--surface-primary)] p-4 text-left',
                 onRowClick && 'transition-colors hover:bg-[var(--surface-secondary)]'
               )}
               onClick={() => onRowClick?.(row)}
@@ -157,10 +157,10 @@ export function DataTable<T>({
                   ? columns[0].render(row)
                   : String((row as Record<string, unknown>)[columns[0]?.key] ?? '—')}
               </div>
-              <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-[var(--text-secondary)]">
+              <div className="mt-2.5 grid grid-cols-2 gap-2 text-xs text-[var(--text-secondary)]">
                 {columns.slice(1, 4).map((col) => (
                   <div key={col.key}>
-                    <p className="uppercase tracking-wide text-[10px] text-[var(--text-tertiary)]">{col.header}</p>
+                    <p className="uppercase tracking-wide text-[10px] font-bold text-[var(--text-tertiary)] mb-0.5">{col.header}</p>
                     <div className="text-[var(--text-primary)]">
                       {col.render
                         ? col.render(row)
@@ -176,15 +176,15 @@ export function DataTable<T>({
         {!isLoading && data.length === 0 && (
           <EmptyState
             description={emptyMessage ?? 'No records found.'}
-            className="py-12"
+            className="rounded-none border-0"
           />
         )}
       </div>
 
       {totalPages > 1 && onPageChange && (
         <div className="flex items-center justify-between text-sm text-[var(--text-secondary)]">
-          <span>
-            Page {page} of {totalPages} ({total} total)
+          <span className="text-[13px]">
+            Page {page} of {totalPages} <span className="text-[var(--text-tertiary)]">({total} total)</span>
           </span>
           <div className="flex items-center gap-1">
             <Button variant="outline" size="icon" onClick={() => onPageChange(1)} disabled={page <= 1}>
@@ -218,23 +218,23 @@ export function DataTable<T>({
 
 export function TableSkeleton({ columns = 5, rows = 5 }: { columns?: number; rows?: number }) {
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div className="overflow-hidden rounded-2xl border border-[var(--border-default)] bg-[var(--surface-primary)] shadow-sm">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+        <table className="min-w-full divide-y divide-[var(--border-default)]">
+          <thead className="bg-[var(--surface-tertiary)]">
             <tr>
               {Array.from({ length: columns }).map((_, i) => (
-                <th key={i} className="px-4 py-3">
+                <th key={i} className="px-5 py-3">
                   <Skeleton className="h-3 w-20" />
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-[var(--border-default)]">
             {Array.from({ length: rows }).map((_, i) => (
               <tr key={i}>
                 {Array.from({ length: columns }).map((_, j) => (
-                  <td key={j} className="px-4 py-3">
+                  <td key={j} className="px-5 py-3.5">
                     <Skeleton className="h-4 w-3/4" />
                   </td>
                 ))}

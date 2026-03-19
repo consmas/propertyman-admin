@@ -77,16 +77,16 @@ export default function PaymentDetailPage({
           title="Amount Received"
           value={formatCurrency(payment.amount)}
           icon={DollarSign}
-          iconBg="bg-green-50"
-          iconColor="text-green-600"
+          
+          accent="#10b981"
         />
         <KpiCard
           title="Unallocated Balance"
           value={formatCurrency(payment.unallocated)}
           subtitle={payment.unallocated > 0 ? 'Pending allocation' : 'Fully allocated'}
           icon={CreditCard}
-          iconBg={payment.unallocated > 0 ? 'bg-amber-50' : 'bg-gray-50'}
-          iconColor={payment.unallocated > 0 ? 'text-amber-600' : 'text-gray-400'}
+          
+          accent={payment.unallocated > 0 ? '#f59e0b' : '#9b9ba5'}
         />
       </div>
 

@@ -15,6 +15,9 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 export function PropertySwitcher() {
+  // useSyncExternalStore is used only to read the mounted flag — the DropdownMenu
+  // is always rendered so Radix's useId counter stays consistent between server
+  // and client, preventing hydration mismatches in downstream components.
   const mounted = useSyncExternalStore(
     () => () => {},
     () => true,
@@ -22,45 +25,26 @@ export function PropertySwitcher() {
   )
   const { properties, currentPropertyId, setCurrentProperty, getCurrentProperty } = usePropertyStore()
   const current = getCurrentProperty()
-
-  // Keep first SSR/CSR render identical to avoid Radix id hydration mismatches.
-  if (!mounted) {
-    return (
-      <Button
-        variant="ghost"
-        className="h-auto w-full justify-start gap-2 px-3 py-2 text-left font-normal opacity-70"
-        disabled
-      >
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--brand-600)]">
-          <Building2 className="h-4 w-4 text-[var(--text-inverse)]" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="truncate text-sm font-semibold text-[var(--text-primary)] leading-tight">
-            Loading property…
-          </p>
-        </div>
-        <ChevronDown className="h-4 w-4 shrink-0 text-[var(--text-tertiary)]" />
-      </Button>
-    )
-  }
-
-  if (!properties.length) return null
+  const ready = mounted && properties.length > 0
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger asChild disabled={!ready}>
         <Button
           variant="ghost"
-          className="h-auto w-full justify-start gap-2 px-3 py-2 text-left font-normal"
+          className={cn(
+            'h-auto w-full justify-start gap-2 px-3 py-2 text-left font-normal',
+            !ready && 'opacity-60'
+          )}
         >
           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--brand-600)]">
             <Building2 className="h-4 w-4 text-[var(--text-inverse)]" />
           </div>
           <div className="flex-1 min-w-0">
             <p className="truncate text-sm font-semibold text-[var(--text-primary)] leading-tight">
-              {current?.name ?? 'Select property'}
+              {ready ? (current?.name ?? 'Select property') : 'Loading…'}
             </p>
-            {current && (
+            {ready && current && (
               <p className="truncate text-xs text-[var(--text-secondary)] leading-tight">{current.address}</p>
             )}
           </div>

@@ -121,9 +121,9 @@ export default function AppPropertyDetailPage({
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <KpiCard title="Total Units" value={totalUnits} icon={Home} iconBg="bg-blue-50" iconColor="text-blue-600" />
+        <KpiCard title="Total Units" value={totalUnits} icon={Home} accent="#3b82f6" />
         <KpiCard title="Occupied" value={occupiedUnits} subtitle={`${formatPercent(occupancyRate)} rate`} icon={Users} />
-        <KpiCard title="Vacant" value={vacantUnits} icon={Building2} iconBg="bg-amber-50" iconColor="text-amber-600" />
+        <KpiCard title="Vacant" value={vacantUnits} icon={Building2} accent="#f59e0b" />
       </div>
 
       <Card>

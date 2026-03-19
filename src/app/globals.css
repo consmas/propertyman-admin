@@ -1,32 +1,32 @@
 @import "tailwindcss";
 
 :root {
-  /* Brand */
-  --brand-50: #eef2ff;
-  --brand-100: #e0e7ff;
-  --brand-200: #c7d2fe;
-  --brand-300: #a5b4fc;
-  --brand-400: #818cf8;
-  --brand-500: #6366f1;
-  --brand-600: #4f46e5;
-  --brand-700: #4338ca;
-  --brand-800: #3730a3;
-  --brand-900: #312e81;
+  /* Brand — warm amber/orange */
+  --brand-50: #fdf4ef;
+  --brand-100: #fae4d0;
+  --brand-200: #f6c8a0;
+  --brand-300: #f0a366;
+  --brand-400: #e88240;
+  --brand-500: #c2703e;
+  --brand-600: #c2703e;
+  --brand-700: #a35a2d;
+  --brand-800: #7c4221;
+  --brand-900: #5a2f17;
 
-  /* Neutral */
+  /* Neutral — warm-toned grays */
   --neutral-0: #ffffff;
-  --neutral-25: #fcfcfd;
-  --neutral-50: #f8fafc;
-  --neutral-100: #f1f5f9;
-  --neutral-200: #e2e8f0;
-  --neutral-300: #cbd5e1;
-  --neutral-400: #94a3b8;
-  --neutral-500: #64748b;
-  --neutral-600: #475569;
-  --neutral-700: #334155;
-  --neutral-800: #1e293b;
-  --neutral-900: #0f172a;
-  --neutral-950: #020617;
+  --neutral-25: #fdfcfb;
+  --neutral-50: #f6f5f2;
+  --neutral-100: #f0ede8;
+  --neutral-200: #e8e7e4;
+  --neutral-300: #d4d2ce;
+  --neutral-400: #9b9ba5;
+  --neutral-500: #6b6b76;
+  --neutral-600: #52525b;
+  --neutral-700: #3f3f46;
+  --neutral-800: #27272a;
+  --neutral-900: #1a1a1f;
+  --neutral-950: #0f0f12;
 
   /* Semantic */
   --success-50: #ecfdf5;
@@ -47,16 +47,16 @@
   --surface-secondary: var(--neutral-50);
   --surface-tertiary: var(--neutral-100);
   --surface-sidebar: var(--neutral-900);
-  --surface-overlay: rgb(15 23 42 / 0.6);
+  --surface-overlay: rgb(26 26 31 / 0.6);
 
   /* Text */
   --text-primary: var(--neutral-900);
-  --text-secondary: var(--neutral-600);
+  --text-secondary: var(--neutral-500);
   --text-tertiary: var(--neutral-400);
   --text-inverse: var(--neutral-0);
   --text-brand: var(--brand-600);
 
-  /* Borders / focus */
+  /* Borders */
   --border-default: var(--neutral-200);
   --border-strong: var(--neutral-300);
   --border-focus: var(--brand-500);
@@ -64,23 +64,32 @@
   /* App root */
   --background: var(--surface-secondary);
   --foreground: var(--text-primary);
+
+  /* Sidebar-specific (always dark regardless of theme) */
+  --sidebar-bg: #1a1a1f;
+  --sidebar-hover: rgba(255, 255, 255, 0.06);
+  --sidebar-active: rgba(255, 255, 255, 0.10);
+  --sidebar-text: rgba(255, 255, 255, 0.55);
+  --sidebar-text-active: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-section: rgba(255, 255, 255, 0.25);
 }
 
 :root[data-theme="dark"] {
   /* Neutral remap */
-  --neutral-0: #0b1220;
-  --neutral-25: #111827;
-  --neutral-50: #172033;
-  --neutral-100: #1f2a3c;
-  --neutral-200: #2b3a53;
-  --neutral-300: #3b4d69;
-  --neutral-400: #64748b;
-  --neutral-500: #94a3b8;
-  --neutral-600: #cbd5e1;
-  --neutral-700: #d8e2ef;
-  --neutral-800: #e2e8f0;
-  --neutral-900: #f1f5f9;
-  --neutral-950: #f8fafc;
+  --neutral-0: #1a1a1f;
+  --neutral-25: #1e1e24;
+  --neutral-50: #141418;
+  --neutral-100: #1f1f26;
+  --neutral-200: #2a2a34;
+  --neutral-300: #3a3a47;
+  --neutral-400: #52525e;
+  --neutral-500: #71717d;
+  --neutral-600: #a1a1ae;
+  --neutral-700: #c8c8d2;
+  --neutral-800: #e0deda;
+  --neutral-900: #f0ede8;
+  --neutral-950: #faf9f7;
 
   /* Semantic tuning */
   --success-50: #06271b;
@@ -96,35 +105,41 @@
   --info-500: #60a5fa;
   --info-700: #bfdbfe;
 
-  /* Surfaces / text */
-  --surface-primary: #0f172a;
-  --surface-secondary: #0b1220;
-  --surface-tertiary: #172033;
-  --surface-sidebar: #020617;
-  --surface-overlay: rgb(2 6 23 / 0.72);
+  /* Surfaces */
+  --surface-primary: #1a1a1f;
+  --surface-secondary: #141418;
+  --surface-tertiary: #1f1f26;
+  --surface-sidebar: #0f0f14;
+  --surface-overlay: rgb(10 10 14 / 0.72);
 
-  --text-primary: #f1f5f9;
-  --text-secondary: #cbd5e1;
-  --text-tertiary: #94a3b8;
-  --text-inverse: #020617;
-  --text-brand: #a5b4fc;
+  /* Text */
+  --text-primary: #f0ede8;
+  --text-secondary: #a1a1ae;
+  --text-tertiary: #71717d;
+  --text-inverse: #1a1a1f;
+  --text-brand: #f0a366;
 
-  --border-default: #2b3a53;
-  --border-strong: #3b4d69;
-  --border-focus: #818cf8;
+  /* Borders */
+  --border-default: #2a2a34;
+  --border-strong: #3a3a47;
+  --border-focus: #e88240;
+
+  /* Sidebar (even darker in dark mode) */
+  --sidebar-bg: #0f0f14;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-dm-sans);
+  --font-sans: var(--font-plus-jakarta);
   --font-mono: var(--font-jetbrains-mono);
+  --font-display: var(--font-outfit);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-dm-sans, system-ui, -apple-system, sans-serif);
+  font-family: var(--font-plus-jakarta, 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif);
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -137,6 +152,27 @@ input,
 select,
 textarea {
   transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+/* Display font utility */
+.font-display {
+  font-family: var(--font-outfit, 'Outfit', system-ui, sans-serif);
+}
+
+/* Fade-up animation */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up {
+  animation: fadeUp 0.45s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 a:focus-visible,

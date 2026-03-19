@@ -4,23 +4,30 @@ import { forwardRef } from 'react'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-[10px] text-sm font-semibold transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
-        default: 'bg-[var(--brand-600)] text-[var(--text-inverse)] hover:bg-[var(--brand-700)] shadow-sm',
-        destructive: 'bg-[var(--error-500)] text-[var(--text-inverse)] hover:bg-[var(--error-700)] shadow-sm',
-        outline: 'border border-[var(--border-default)] bg-[var(--surface-primary)] text-[var(--text-secondary)] hover:bg-[var(--surface-tertiary)] shadow-sm',
-        secondary: 'bg-[var(--surface-tertiary)] text-[var(--text-primary)] hover:bg-[var(--border-default)]',
-        ghost: 'text-[var(--text-secondary)] hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-primary)]',
+        default:
+          'bg-[var(--brand-600)] text-white hover:bg-[var(--brand-700)] shadow-sm',
+        destructive:
+          'bg-[var(--error-500)] text-white hover:bg-[var(--error-700)] shadow-sm',
+        outline:
+          'border border-[var(--border-default)] bg-[var(--surface-primary)] text-[var(--text-secondary)] hover:bg-[var(--surface-tertiary)] shadow-sm',
+        secondary:
+          'bg-[var(--surface-tertiary)] text-[var(--text-primary)] hover:bg-[var(--border-default)]',
+        ghost:
+          'text-[var(--text-secondary)] hover:bg-[var(--surface-tertiary)] hover:text-[var(--text-primary)]',
         link: 'text-[var(--text-brand)] underline-offset-4 hover:underline',
-        success: 'bg-[var(--success-500)] text-[var(--text-inverse)] hover:bg-[var(--success-700)] shadow-sm',
-        warning: 'bg-[var(--warning-500)] text-[var(--text-inverse)] hover:bg-[var(--warning-700)] shadow-sm',
+        success:
+          'bg-[var(--success-500)] text-white hover:bg-[var(--success-700)] shadow-sm',
+        warning:
+          'bg-[var(--warning-500)] text-white hover:bg-[var(--warning-700)] shadow-sm',
       },
       size: {
         default: 'h-9 px-4 py-2',
-        sm: 'h-7 rounded-md px-3 text-xs',
-        lg: 'h-11 rounded-md px-6 text-base',
+        sm: 'h-7 rounded-[8px] px-3 text-xs',
+        lg: 'h-11 rounded-[12px] px-6 text-[15px]',
         icon: 'h-9 w-9',
       },
     },

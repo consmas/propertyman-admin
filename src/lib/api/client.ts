@@ -108,16 +108,13 @@ async function refreshAccessToken(): Promise<string> {
 
 function forceLogout() {
   if (typeof window === 'undefined') return
-  // Clear individual token keys
   localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN)
   localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN)
   localStorage.removeItem(STORAGE_KEYS.USER)
-  // Clear the Zustand persist store — without this, onRehydrateStorage re-activates
-  // stale tokens on the next page load, causing an infinite redirect loop
   localStorage.removeItem('auth-store')
-  // Clear the proxy auth cookie so the server-side guard also reflects logged-out state
   document.cookie = 'pm_auth=;path=/;max-age=0'
-  window.location.href = '/login'
+  const isTenantPath = window.location.pathname.startsWith('/tenant/')
+  window.location.href = isTenantPath ? '/tenant/login' : '/login'
 }
 
 apiClient.interceptors.response.use(

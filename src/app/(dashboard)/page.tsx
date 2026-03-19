@@ -136,8 +136,8 @@ export default function DashboardPage() {
           value={`${kpis.occupied_units} / ${kpis.total_units}`}
           subtitle={`${formatPercent(kpis.occupancy_rate)} occupancy`}
           icon={Home}
-          iconColor="text-indigo-600"
-          iconBg="bg-indigo-50"
+          
+          accent="#8b5cf6"
           isLoading={isLoading}
         />
         <KpiCard
@@ -145,8 +145,8 @@ export default function DashboardPage() {
           value={kpis.open_invoices}
           subtitle={`${kpis.overdue_invoices} overdue`}
           icon={FileText}
-          iconColor="text-amber-600"
-          iconBg="bg-amber-50"
+          
+          accent="#f59e0b"
           isLoading={isLoading}
         />
         <KpiCard
@@ -154,8 +154,8 @@ export default function DashboardPage() {
           value={formatCurrency(kpis.collected_this_month)}
           subtitle="Total payments received"
           icon={TrendingUp}
-          iconColor="text-emerald-600"
-          iconBg="bg-emerald-50"
+          
+          accent="#10b981"
           isLoading={isLoading}
         />
         <KpiCard
@@ -163,8 +163,8 @@ export default function DashboardPage() {
           value={kpis.pending_maintenance}
           subtitle="Open requests"
           icon={Wrench}
-          iconColor="text-red-600"
-          iconBg="bg-red-50"
+          
+          accent="#ef4444"
           isLoading={isLoading}
         />
       </div>

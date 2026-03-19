@@ -65,30 +65,30 @@ export default function PropertyDetailPage({ params }: { params: Promise<{ id: s
           title="Total Units"
           value={property.total_units}
           icon={Home}
-          iconBg="bg-blue-50"
-          iconColor="text-blue-600"
+          
+          accent="#3b82f6"
         />
         <KpiCard
           title="Occupied Units"
           value={property.occupied_units}
           subtitle={formatPercent(occupancyRate) + ' occupancy'}
           icon={Users}
-          iconBg="bg-indigo-50"
-          iconColor="text-indigo-600"
+          
+          accent="#8b5cf6"
         />
         <KpiCard
           title="Vacant Units"
           value={property.total_units - property.occupied_units}
           icon={Building2}
-          iconBg="bg-amber-50"
-          iconColor="text-amber-600"
+          
+          accent="#f59e0b"
         />
         <KpiCard
           title="Documents"
           value="—"
           icon={FileText}
-          iconBg="bg-gray-50"
-          iconColor="text-gray-600"
+          
+          accent="#9b9ba5"
         />
       </div>
 

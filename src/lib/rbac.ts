@@ -17,6 +17,12 @@ export const APP_ROUTE_ROLES: Record<string, UserRole[]> = {
   '/app/audit-logs': ['owner', 'admin', 'accountant'],
   '/app/billing': ['owner', 'admin', 'accountant'],
   '/app/dashboard': ['owner', 'admin', 'property_manager', 'accountant', 'caretaker', 'tenant'],
+  '/tenant/dashboard': ['tenant'],
+  '/tenant/lease': ['tenant'],
+  '/tenant/invoices': ['tenant'],
+  '/tenant/payments': ['tenant'],
+  '/tenant/maintenance': ['tenant'],
+  '/tenant/profile': ['tenant'],
 }
 
 export function canAccessPath(pathname: string, role?: UserRole | null): boolean {

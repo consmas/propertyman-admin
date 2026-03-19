@@ -33,15 +33,20 @@ function applyThemeToDocument(theme: Theme) {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [setting, setSettingState] = useState<ThemeSetting>(() => {
-    if (typeof window === 'undefined') return 'system'
+  // Always start with 'system' on both server and client to avoid hydration mismatch.
+  // The inline script in layout.tsx sets data-theme before React hydrates (prevents FOUC).
+  const [setting, setSettingState] = useState<ThemeSetting>('system')
+  const theme = useMemo(() => resolveTheme(setting), [setting])
+
+  // Hydrate from localStorage after mount — cannot do this in useState initializer
+  // because the server returns 'system' (no window) while the client would return the
+  // stored value, causing a React hydration mismatch.
+  useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY) as ThemeSetting | null
     if (stored === 'light' || stored === 'dark' || stored === 'system') {
-      return stored
+      setSettingState(stored)
     }
-    return 'system'
-  })
-  const theme = useMemo(() => resolveTheme(setting), [setting])
+  }, [])
 
   useEffect(() => {
     applyThemeToDocument(theme)

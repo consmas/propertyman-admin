@@ -14,6 +14,7 @@ import {
   Logs,
   Wrench,
   LogOut,
+  Settings,
   X,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -97,80 +98,145 @@ export function Sidebar({ onClose }: SidebarProps) {
     .filter((group) => group.items.length > 0)
 
   return (
-    <div className="pm-sidebar flex h-full w-64 flex-col bg-[var(--surface-sidebar)]">
+    <div
+      className="flex h-full w-64 flex-col"
+      style={{ background: 'var(--sidebar-bg)' }}
+    >
       {/* Close button (mobile) */}
       {onClose && (
         <button
-          className="absolute right-4 top-4 text-[var(--neutral-400)] hover:text-[var(--text-inverse)] lg:hidden"
+          className="absolute right-4 top-4 lg:hidden"
           onClick={onClose}
+          style={{ color: 'var(--sidebar-text)' }}
         >
           <X className="h-5 w-5" />
         </button>
       )}
 
+      {/* Logo */}
+      <div className="flex items-center gap-3 px-5 py-6">
+        <div
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] font-display text-base font-bold text-white"
+          style={{ background: 'linear-gradient(135deg, var(--brand-600), var(--brand-700))' }}
+        >
+          P
+        </div>
+        <div>
+          <p className="font-display text-[15px] font-bold leading-tight text-white tracking-tight">
+            PropertyManager
+          </p>
+          <p className="text-[11px] font-medium" style={{ color: 'var(--sidebar-text)' }}>
+            Admin Dashboard
+          </p>
+        </div>
+      </div>
+
       {/* Property switcher */}
-      <div className="border-b border-[var(--neutral-700)]/60 p-3">
-        <div className="[&_button]:text-[var(--text-inverse)] [&_button:hover]:bg-[var(--neutral-800)] [&_p]:text-[var(--text-inverse)] [&_.text-gray-500]:text-[var(--neutral-400)]">
+      <div className="border-b px-3 pb-4" style={{ borderColor: 'var(--sidebar-border)' }}>
+        <div className="[&_button]:text-white [&_button:hover]:bg-white/8 [&_p]:text-white [&_.text-\[var\(--text-secondary\)\]]:!text-white/55 [&_.text-\[var\(--text-primary\)\]]:!text-white [&_.text-\[var\(--text-tertiary\)\]]:!text-white/40">
           <PropertySwitcher />
         </div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-4 overflow-y-auto p-3">
+      <nav className="flex-1 space-y-5 overflow-y-auto px-3 py-4">
         {visibleGroups.map((group) => (
-          <div key={group.label} className="space-y-1">
-            <p className="px-2 text-[11px] font-semibold uppercase tracking-wide text-[var(--neutral-400)]">
+          <div key={group.label}>
+            <p
+              className="mb-1.5 px-3 text-[10px] font-bold uppercase tracking-[0.1em]"
+              style={{ color: 'var(--sidebar-section)' }}
+            >
               {group.label}
             </p>
-            {group.items.map((item) => {
-              const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={onClose}
-                  className={cn(
-                    'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                    isActive
-                      ? 'bg-[var(--brand-600)] text-[var(--text-inverse)]'
-                      : 'text-[var(--neutral-300)] hover:bg-[var(--neutral-800)] hover:text-[var(--text-inverse)]'
-                  )}
-                >
-                  <item.icon className="h-4 w-4 shrink-0" />
-                  {item.label}
-                </Link>
-              )
-            })}
+            <div className="space-y-0.5">
+              {group.items.map((item) => {
+                const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={onClose}
+                    className={cn(
+                      'flex items-center gap-3 rounded-[10px] px-3 py-2 text-[13px] font-medium transition-colors',
+                      isActive
+                        ? 'font-semibold'
+                        : ''
+                    )}
+                    style={{
+                      background: isActive ? 'var(--sidebar-active)' : 'transparent',
+                      color: isActive ? 'var(--sidebar-text-active)' : 'var(--sidebar-text)',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) e.currentTarget.style.background = 'var(--sidebar-hover)'
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) e.currentTarget.style.background = 'transparent'
+                    }}
+                  >
+                    <item.icon className="h-4 w-4 shrink-0" />
+                    {item.label}
+                  </Link>
+                )
+              })}
+            </div>
           </div>
         ))}
       </nav>
 
       {/* Bottom section */}
-      <div className="space-y-1 border-t border-[var(--neutral-700)]/60 p-3">
+      <div
+        className="space-y-0.5 border-t px-3 pb-2 pt-3"
+        style={{ borderColor: 'var(--sidebar-border)' }}
+      >
+        <Link
+          href="/app/settings"
+          className="flex items-center gap-3 rounded-[10px] px-3 py-2 text-[13px] font-medium transition-colors"
+          style={{ color: 'var(--sidebar-text)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--sidebar-hover)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
+        >
+          <Settings className="h-4 w-4" />
+          Settings
+        </Link>
         <Link
           href="/logout"
-          className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-[var(--neutral-300)] transition-colors hover:bg-[var(--neutral-800)] hover:text-[var(--error-500)]"
           onClick={onClose}
+          className="flex items-center gap-3 rounded-[10px] px-3 py-2 text-[13px] font-medium transition-colors"
+          style={{ color: 'rgba(239,68,68,0.7)' }}
+          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239,68,68,0.08)' }}
+          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
         >
           <LogOut className="h-4 w-4" />
           Sign out
         </Link>
+      </div>
 
-        {/* User info */}
-        {user && (
-          <div className="mt-2 flex items-center gap-3 rounded-lg px-3 py-2">
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-[var(--brand-700)] text-[var(--brand-100)] text-xs">
+      {/* User info */}
+      {user && (
+        <div
+          className="border-t px-3 py-3"
+          style={{ borderColor: 'var(--sidebar-border)' }}
+        >
+          <div className="flex items-center gap-3 rounded-[10px] px-2 py-2">
+            <Avatar className="h-8 w-8 shrink-0">
+              <AvatarFallback
+                className="text-xs font-bold"
+                style={{ background: 'linear-gradient(135deg, var(--brand-600), var(--brand-400))', color: '#fff' }}
+              >
                 {getInitials(user.full_name)}
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-semibold text-[var(--text-inverse)]">{user.full_name}</p>
-              <p className="truncate text-xs capitalize text-[var(--neutral-400)]">{user.role.replace(/_/g, ' ')}</p>
+              <p className="truncate text-[13px] font-semibold text-white leading-tight">
+                {user.full_name}
+              </p>
+              <p className="truncate text-[11px] capitalize leading-tight" style={{ color: 'var(--sidebar-text)' }}>
+                {user.role.replace(/_/g, ' ')}
+              </p>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   )
 }
