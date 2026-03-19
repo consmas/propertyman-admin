@@ -15,7 +15,7 @@ export default function LogoutPage() {
     called.current = true
 
     logout().then(() => {
-      router.replace('/login')
+      router.replace('/')
     })
   }, [logout, router])
 

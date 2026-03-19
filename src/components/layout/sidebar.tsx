@@ -17,6 +17,7 @@ import {
   Settings,
   X,
 } from 'lucide-react'
+import { LogoLockupDark } from '@/components/shared/logo'
 import { cn } from '@/lib/utils'
 import { useAuth } from '@/hooks/use-auth'
 import { PropertySwitcher } from './property-switcher'
@@ -114,21 +115,8 @@ export function Sidebar({ onClose }: SidebarProps) {
       )}
 
       {/* Logo */}
-      <div className="flex items-center gap-3 px-5 py-6">
-        <div
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] font-display text-base font-bold text-white"
-          style={{ background: 'linear-gradient(135deg, var(--brand-600), var(--brand-700))' }}
-        >
-          P
-        </div>
-        <div>
-          <p className="font-display text-[15px] font-bold leading-tight text-white tracking-tight">
-            PropertyManager
-          </p>
-          <p className="text-[11px] font-medium" style={{ color: 'var(--sidebar-text)' }}>
-            Admin Dashboard
-          </p>
-        </div>
+      <div className="px-5 py-5">
+        <LogoLockupDark iconSize={32} subtitle="Admin Dashboard" />
       </div>
 
       {/* Property switcher */}

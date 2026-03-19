@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils'
+import { LogoMark } from '@/components/shared/logo'
 
 interface LoadingSpinnerProps {
   className?: string
@@ -31,7 +32,7 @@ export function PageLoader() {
         className="flex h-12 w-12 items-center justify-center rounded-2xl"
         style={{ background: 'linear-gradient(135deg, var(--brand-600), var(--brand-700))' }}
       >
-        <span className="font-display text-lg font-bold text-white">P</span>
+        <LogoMark size={28} color="#ffffff" />
       </div>
       <LoadingSpinner size="md" />
     </div>

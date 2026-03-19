@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
-import { Building2, Mail, Lock, Eye, EyeOff } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/hooks/use-auth'
@@ -14,6 +14,7 @@ import { loginSchema, type LoginFormValues } from '@/lib/validations/auth'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { STORAGE_KEYS } from '@/lib/api/client'
+import { LogoLockupLight } from '@/components/shared/logo'
 
 function TenantLoginForm() {
   const router = useRouter()
@@ -60,12 +61,8 @@ function TenantLoginForm() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="mb-8 text-center">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-600 shadow-lg mb-4">
-            <Building2 className="h-7 w-7 text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900">PropertyManager</h1>
-          <p className="mt-1 text-sm text-gray-500">Tenant Portal</p>
+        <div className="mb-8 flex justify-center">
+          <LogoLockupLight iconSize={44} subtitle="Tenant Portal" />
         </div>
 
         {/* Card */}
