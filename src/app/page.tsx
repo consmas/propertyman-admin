@@ -11,104 +11,6 @@ import { LogoMark, LogoLockup, LogoLockupDark } from '@/components/shared/logo'
 
 const APK_URL = 'https://propertyapi.rohodev.com/downloads/rentwise.apk'
 
-// ─── Install Banner ──────────────────────────────────────────────────────────
-
-function InstallBanner() {
-  const [deferredPrompt, setDeferredPrompt] = useState<Event & { prompt: () => void } | null>(null)
-  const [visible, setVisible] = useState(false)
-
-  const dismiss = () => setVisible(false)
-
-  useEffect(() => {
-    const handler = (e: Event) => {
-      e.preventDefault()
-      setDeferredPrompt(e as Event & { prompt: () => void })
-      setVisible(true)
-    }
-    window.addEventListener('beforeinstallprompt', handler)
-    return () => window.removeEventListener('beforeinstallprompt', handler)
-  }, [])
-
-  if (!visible) return null
-
-  return (
-    <>
-    <style>{`
-      @keyframes rw-slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-      .rw-banner {
-        position: fixed; bottom: 16px; right: 16px; left: 16px; z-index: 9999;
-        max-width: 420px; margin: 0 auto;
-        padding: 16px 18px 18px;
-        background: #ffffff;
-        border-radius: 20px;
-        border: 1px solid #e8e7e4;
-        box-shadow: 0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.06);
-        display: flex; flex-direction: column; gap: 12px;
-        animation: rw-slideUp 0.35s cubic-bezier(.4,0,.2,1) both;
-      }
-      @media (max-width: 640px) {
-        .rw-banner { bottom: 0; left: 0; right: 0; max-width: 100%; border-radius: 20px 20px 0 0; border-bottom: none;
-          padding: 16px 18px calc(18px + env(safe-area-inset-bottom, 0px)); }
-      }
-    `}</style>
-    <div className="rw-banner">
-
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{
-            width: 44, height: 44, borderRadius: 12, flexShrink: 0,
-            background: 'linear-gradient(135deg, #c2703e, #a35a2d)',
-            display: 'grid', placeItems: 'center',
-          }}>
-            <LogoMark size={26} color="#ffffff" />
-          </div>
-          <div>
-            <p style={{ fontSize: 15, fontWeight: 700, color: '#1a1a1f', lineHeight: 1.2 }}>Install RentWise</p>
-            <p style={{ fontSize: 12, color: '#9b9ba5', fontWeight: 500, marginTop: 2 }}>Get the full Android experience</p>
-          </div>
-        </div>
-        <button
-          onClick={dismiss}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: '#9b9ba5' }}
-          aria-label="Dismiss"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-        </button>
-      </div>
-
-      {/* Primary CTA — APK */}
-      <a
-        href={APK_URL}
-        onClick={dismiss}
-        className="rw-install-primary"
-        style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-          height: 50, borderRadius: 14, textDecoration: 'none',
-          background: '#c2703e', color: '#fff', fontWeight: 700, fontSize: 15,
-        }}
-      >
-        <AndroidIcon /> <span>Download APK (Recommended)</span>
-      </a>
-
-      {/* Secondary — PWA */}
-      {deferredPrompt && (
-        <button
-          onClick={() => { deferredPrompt.prompt(); dismiss() }}
-          style={{
-            height: 44, borderRadius: 14, border: '1.5px solid #e8e7e4',
-            background: 'transparent', color: '#6b6b76', fontWeight: 600,
-            fontSize: 13, cursor: 'pointer',
-          }}
-        >
-          Add to Home Screen (web version)
-        </button>
-      )}
-    </div>
-    </>
-  )
-}
-
 // ─── Icons ──────────────────────────────────────────────────────────────────
 
 const EyeIcon = ({ open }: { open: boolean }) => (
@@ -899,7 +801,6 @@ export default function TenantLanding() {
         }
       `}</style>
 
-      <InstallBanner />
       <div
         key={view}
         style={{
