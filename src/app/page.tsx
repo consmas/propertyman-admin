@@ -69,13 +69,14 @@ function InstallBanner() {
       <a
         href={APK_URL}
         onClick={() => setVisible(false)}
+        className="rw-install-primary"
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
           height: 50, borderRadius: 14, textDecoration: 'none',
           background: '#c2703e', color: '#fff', fontWeight: 700, fontSize: 15,
         }}
       >
-        <AndroidIcon /> Download APK (Recommended)
+        <AndroidIcon /> <span>Download APK (Recommended)</span>
       </a>
 
       {/* Secondary — PWA */}
@@ -352,11 +353,11 @@ function AuthLayout({
       </div>
 
       {/* Right form panel */}
-      <div style={{
+      <div className="rw-form-panel" style={{
         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: '40px 24px', background: 'var(--rw-bg)', overflowY: 'auto',
       }}>
-        <div className="fade-up" style={{ width: '100%', maxWidth: 420 }}>
+        <div className="rw-form-inner fade-up" style={{ width: '100%', maxWidth: 420 }}>
           <button onClick={onBack} style={{
             display: 'flex', alignItems: 'center', gap: 6, marginBottom: 32,
             background: 'none', border: 'none', cursor: 'pointer',
@@ -480,7 +481,7 @@ export default function TenantLanding() {
   const LandingView = () => (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Nav */}
-      <nav className="fade-up" style={{
+      <nav className="rw-nav fade-up" style={{
         padding: '20px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         position: 'relative', zIndex: 10,
       }}>
@@ -492,7 +493,7 @@ export default function TenantLanding() {
       </nav>
 
       {/* Hero */}
-      <div style={{
+      <div className="rw-hero" style={{
         flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: '0 40px 60px', gap: 80, flexWrap: 'wrap', position: 'relative',
       }}>
@@ -509,7 +510,7 @@ export default function TenantLanding() {
         }} />
 
         {/* Text */}
-        <div style={{ maxWidth: 520, position: 'relative', zIndex: 2 }}>
+        <div className="rw-hero-text" style={{ maxWidth: 520, position: 'relative', zIndex: 2 }}>
           <div className="fade-up" style={{ animationDelay: '100ms' }}>
             <div style={{
               display: 'inline-flex', alignItems: 'center', gap: 8, padding: '6px 14px 6px 8px',
@@ -522,7 +523,7 @@ export default function TenantLanding() {
             </div>
           </div>
 
-          <h1 className="fade-up" style={{
+          <h1 className="rw-hero-h1 fade-up" style={{
             fontSize: 'clamp(36px, 5vw, 56px)', fontWeight: 900, lineHeight: 1.08,
             color: 'var(--rw-text)', fontFamily: 'var(--rw-display)',
             letterSpacing: '-0.035em', marginBottom: 20, animationDelay: '200ms',
@@ -532,7 +533,7 @@ export default function TenantLanding() {
             managed.
           </h1>
 
-          <p className="fade-up" style={{
+          <p className="rw-hero-p fade-up" style={{
             fontSize: 17, lineHeight: 1.65, color: 'var(--rw-text-secondary)',
             maxWidth: 420, marginBottom: 36, fontWeight: 500, animationDelay: '300ms',
           }}>
@@ -548,7 +549,7 @@ export default function TenantLanding() {
             </a>
           </div>
 
-          <div className="fade-up" style={{ display: 'flex', gap: 28, marginTop: 40, alignItems: 'center', animationDelay: '500ms' }}>
+          <div className="rw-stats fade-up" style={{ display: 'flex', gap: 28, marginTop: 40, alignItems: 'center', animationDelay: '500ms' }}>
             {[
               { val: '4.8★', label: 'Play Store' },
               { val: '24/7', label: 'Support' },
@@ -566,7 +567,7 @@ export default function TenantLanding() {
       </div>
 
       {/* Download section */}
-      <div id="download" className="fade-up" style={{
+      <div id="download" className="rw-download fade-up" style={{
         margin: '0 40px 60px', padding: '48px 56px', borderRadius: 28,
         background: 'linear-gradient(135deg, var(--rw-sidebar), #2a2a32)',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -584,7 +585,7 @@ export default function TenantLanding() {
             Pay rent on the go, get instant notifications for maintenance updates, and manage everything from your phone.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: 14, position: 'relative', zIndex: 1, flexWrap: 'wrap' }}>
+        <div className="rw-dl-btns" style={{ display: 'flex', gap: 14, position: 'relative', zIndex: 1, flexWrap: 'wrap' }}>
           <a href={APK_URL} style={{
             display: 'flex', alignItems: 'center', gap: 12, padding: '14px 28px',
             background: 'rgba(255,255,255,0.08)', borderRadius: 16, textDecoration: 'none',
@@ -607,7 +608,7 @@ export default function TenantLanding() {
       </div>
 
       {/* Footer */}
-      <footer style={{
+      <footer className="rw-footer" style={{
         padding: '24px 40px', borderTop: '1px solid var(--rw-border)',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12,
       }}>
@@ -659,7 +660,7 @@ export default function TenantLanding() {
         )}
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24, marginTop: -6 }}>
-          <a href={APK_URL} style={{ fontSize: 13, fontWeight: 600, color: 'var(--rw-accent)', textDecoration: 'none' }}>Forgot password?</a>
+          <a href="#" style={{ fontSize: 13, fontWeight: 600, color: 'var(--rw-accent)', textDecoration: 'none' }}>Forgot password?</a>
         </div>
 
         <button type="submit" className="rw-btn-primary rw-btn-full" style={{ height: 52, fontSize: 15, marginBottom: 20, gap: 8 }} disabled={authLoading}>
@@ -685,7 +686,7 @@ export default function TenantLanding() {
       onBack={() => setView('landing')}
     >
       <form onSubmit={handleRegister} noValidate>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+        <div className="rw-reg-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
           <RwInput
             label="FULL NAME"
             placeholder="Kwame Mensah"
@@ -859,6 +860,27 @@ export default function TenantLanding() {
         @media (max-width: 900px) {
           .rw-auth-panel { display: none !important; }
         }
+
+        /* ── Mobile ─────────────────────────────── */
+        @media (max-width: 640px) {
+          .rw-nav        { padding: 14px 20px !important; }
+          .rw-hero       { padding: 0 20px 40px !important; gap: 32px !important; }
+          .rw-phone      { display: none !important; }
+          .rw-hero-text  { max-width: 100% !important; }
+          .rw-hero-h1    { font-size: 34px !important; }
+          .rw-hero-p     { font-size: 15px !important; }
+          .rw-stats      { gap: 20px !important; margin-top: 28px !important; }
+          .rw-download   { margin: 0 16px 36px !important; padding: 28px 20px !important; border-radius: 20px !important; }
+          .rw-dl-btns    { flex-direction: column !important; width: 100% !important; }
+          .rw-dl-btns a  { justify-content: center !important; }
+          .rw-footer     { padding: 20px !important; flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; }
+          .rw-reg-grid   { grid-template-columns: 1fr !important; }
+          .rw-form-panel { padding: 28px 20px 40px !important; }
+          .rw-form-inner { max-width: 100% !important; }
+          .rw-btn-lg     { padding: 13px 20px !important; font-size: 14px !important; }
+          .rw-install-primary span { display: none; }
+          .rw-install-primary::after { content: 'Download APK'; }
+        }
       `}</style>
 
       <InstallBanner />
@@ -866,9 +888,9 @@ export default function TenantLanding() {
         key={view}
         style={{ fontFamily: 'var(--rw-body)', background: 'var(--rw-bg)', minHeight: '100vh' }}
       >
-        {view === 'landing'  && <LandingView />}
-        {view === 'login'    && <LoginView />}
-        {view === 'register' && <RegisterView />}
+        {view === 'landing'  && LandingView()}
+        {view === 'login'    && LoginView()}
+        {view === 'register' && RegisterView()}
       </div>
     </>
   )
