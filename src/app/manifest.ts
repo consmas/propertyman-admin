@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'RentWise — Tenant Portal',
     short_name: 'RentWise',
     description: 'Pay rent, track maintenance, and manage your home from one beautiful dashboard.',
-    start_url: '/',
+    start_url: '/tenant/login',
     display: 'standalone',
     background_color: '#f6f5f2',
     theme_color: '#c2703e',

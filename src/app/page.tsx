@@ -9,6 +9,92 @@ import { STORAGE_KEYS } from '@/lib/api/client'
 import { toast } from 'sonner'
 import { LogoMark, LogoLockup, LogoLockupDark } from '@/components/shared/logo'
 
+const APK_URL = 'https://propertyapi.rohodev.com/downloads/rentwise.apk'
+
+// ─── Install Banner ──────────────────────────────────────────────────────────
+
+function InstallBanner() {
+  const [deferredPrompt, setDeferredPrompt] = useState<Event & { prompt: () => void } | null>(null)
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      e.preventDefault()
+      setDeferredPrompt(e as Event & { prompt: () => void })
+      setVisible(true)
+    }
+    window.addEventListener('beforeinstallprompt', handler)
+    return () => window.removeEventListener('beforeinstallprompt', handler)
+  }, [])
+
+  if (!visible) return null
+
+  return (
+    <div style={{
+      position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999,
+      padding: '16px 20px 28px',
+      background: '#ffffff',
+      borderTop: '1px solid #e8e7e4',
+      boxShadow: '0 -8px 40px rgba(0,0,0,0.12)',
+      display: 'flex', flexDirection: 'column', gap: 12,
+      animation: 'rw-slideUp 0.35s cubic-bezier(.4,0,.2,1) both',
+    }}>
+      <style>{`@keyframes rw-slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }`}</style>
+
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{
+            width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+            background: 'linear-gradient(135deg, #c2703e, #a35a2d)',
+            display: 'grid', placeItems: 'center',
+          }}>
+            <LogoMark size={26} color="#ffffff" />
+          </div>
+          <div>
+            <p style={{ fontSize: 15, fontWeight: 700, color: '#1a1a1f', lineHeight: 1.2 }}>Install RentWise</p>
+            <p style={{ fontSize: 12, color: '#9b9ba5', fontWeight: 500, marginTop: 2 }}>Get the full Android experience</p>
+          </div>
+        </div>
+        <button
+          onClick={() => setVisible(false)}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: '#9b9ba5' }}
+          aria-label="Dismiss"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      {/* Primary CTA — APK */}
+      <a
+        href={APK_URL}
+        onClick={() => setVisible(false)}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+          height: 50, borderRadius: 14, textDecoration: 'none',
+          background: '#c2703e', color: '#fff', fontWeight: 700, fontSize: 15,
+        }}
+      >
+        <AndroidIcon /> Download APK (Recommended)
+      </a>
+
+      {/* Secondary — PWA */}
+      {deferredPrompt && (
+        <button
+          onClick={() => { deferredPrompt.prompt(); setVisible(false) }}
+          style={{
+            height: 44, borderRadius: 14, border: '1.5px solid #e8e7e4',
+            background: 'transparent', color: '#6b6b76', fontWeight: 600,
+            fontSize: 13, cursor: 'pointer',
+          }}
+        >
+          Add to Home Screen (web version)
+        </button>
+      )}
+    </div>
+  )
+}
+
 // ─── Icons ──────────────────────────────────────────────────────────────────
 
 const EyeIcon = ({ open }: { open: boolean }) => (
@@ -256,7 +342,7 @@ function AuthLayout({
               <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>Prefer the app?</div>
               <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>Download Rentwise for Android</div>
             </div>
-            <a href="https://propertyapi.rohodev.com/downloads/rentwise.apk" style={{
+            <a href={APK_URL} style={{
               marginLeft: 'auto', padding: '7px 14px', borderRadius: 10,
               background: 'rgba(255,255,255,0.12)', color: '#fff',
               fontSize: 12, fontWeight: 700, textDecoration: 'none',
@@ -499,7 +585,7 @@ export default function TenantLanding() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: 14, position: 'relative', zIndex: 1, flexWrap: 'wrap' }}>
-          <a href="https://propertyapi.rohodev.com/downloads/rentwise.apk" style={{
+          <a href={APK_URL} style={{
             display: 'flex', alignItems: 'center', gap: 12, padding: '14px 28px',
             background: 'rgba(255,255,255,0.08)', borderRadius: 16, textDecoration: 'none',
             border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)', color: '#fff',
@@ -510,7 +596,7 @@ export default function TenantLanding() {
               <div style={{ fontSize: 16, fontWeight: 700, fontFamily: 'var(--rw-display)', letterSpacing: '-0.01em' }}>Google Play</div>
             </div>
           </a>
-          <a href="https://propertyapi.rohodev.com/downloads/rentwise.apk" style={{
+          <a href={APK_URL} style={{
             display: 'flex', alignItems: 'center', gap: 10, padding: '14px 24px',
             background: 'var(--rw-accent)', borderRadius: 16, textDecoration: 'none',
             color: '#fff', fontWeight: 700, fontSize: 14,
@@ -573,7 +659,7 @@ export default function TenantLanding() {
         )}
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24, marginTop: -6 }}>
-          <a href="https://propertyapi.rohodev.com/downloads/rentwise.apk" style={{ fontSize: 13, fontWeight: 600, color: 'var(--rw-accent)', textDecoration: 'none' }}>Forgot password?</a>
+          <a href={APK_URL} style={{ fontSize: 13, fontWeight: 600, color: 'var(--rw-accent)', textDecoration: 'none' }}>Forgot password?</a>
         </div>
 
         <button type="submit" className="rw-btn-primary rw-btn-full" style={{ height: 52, fontSize: 15, marginBottom: 20, gap: 8 }} disabled={authLoading}>
@@ -775,6 +861,7 @@ export default function TenantLanding() {
         }
       `}</style>
 
+      <InstallBanner />
       <div
         key={view}
         style={{ fontFamily: 'var(--rw-body)', background: 'var(--rw-bg)', minHeight: '100vh' }}
