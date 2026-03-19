@@ -21,8 +21,34 @@ const jetBrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PropertyManager — Admin Dashboard",
-  description: "Multi-location property management admin dashboard",
+  title: {
+    default: 'RentWise — Tenant Portal',
+    template: '%s | RentWise',
+  },
+  description: 'Pay rent, track maintenance requests, and manage your home — all from one beautiful dashboard.',
+  applicationName: 'RentWise',
+  keywords: ['rent', 'tenant portal', 'property management', 'maintenance', 'invoices', 'lease'],
+  authors: [{ name: 'RentWise' }],
+  creator: 'RentWise',
+  metadataBase: new URL('https://propertyapi.rohodev.com'),
+  openGraph: {
+    type: 'website',
+    title: 'RentWise — Tenant Portal',
+    description: 'Pay rent, track maintenance requests, and manage your home — all from one beautiful dashboard.',
+    siteName: 'RentWise',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'RentWise — Tenant Portal',
+    description: 'Pay rent, track maintenance requests, and manage your home — all from one beautiful dashboard.',
+  },
+  icons: {
+    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
+    apple: [{ url: '/apple-icon.svg', type: 'image/svg+xml' }],
+    shortcut: '/icon.svg',
+  },
+  manifest: '/manifest.webmanifest',
+  themeColor: '#c2703e',
 };
 
 export default function RootLayout({
