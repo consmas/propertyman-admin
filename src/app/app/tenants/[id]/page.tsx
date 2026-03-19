@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
+import { useParams, useRouter } from 'next/navigation'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft, Mail, Phone, CreditCard, Home, FileText, Edit } from 'lucide-react'
+import { toast } from 'sonner'
 import { tenantsEndpoints } from '@/lib/api/endpoints/tenants'
 import { leasesEndpoints } from '@/lib/api/endpoints/leases'
 import { unitsEndpoints } from '@/lib/api/endpoints/units'
@@ -37,6 +38,8 @@ function DetailRow({ label, children }: { label: string; children: React.ReactNo
 
 function TenantDetailInner() {
   const params = useParams<{ id: string }>()
+  const router = useRouter()
+  const queryClient = useQueryClient()
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ['tenants', params.id],
@@ -52,6 +55,16 @@ function TenantDetailInner() {
     queryKey: ['units', 'tenant-detail', activeLease?.unit_id],
     queryFn: () => unitsEndpoints.get(activeLease!.unit_id),
     enabled: Boolean(activeLease?.unit_id),
+  })
+
+  const { mutate: deleteTenant, isPending: isDeleting } = useMutation({
+    mutationFn: () => tenantsEndpoints.delete(params.id),
+    onSuccess: () => {
+      toast.success('Tenant deleted')
+      queryClient.invalidateQueries({ queryKey: ['tenants'] })
+      router.push('/app/tenants')
+    },
+    onError: () => toast.error('Failed to delete tenant'),
   })
 
   if (isLoading) return <PageLoader />
@@ -72,12 +85,24 @@ function TenantDetailInner() {
             Tenants
           </Button>
         </Link>
-        <Link href={`/app/tenants/${tenant.id}/edit`}>
-          <Button size="sm" variant="outline" className="gap-1.5">
-            <Edit className="h-4 w-4" />
-            Edit
+        <div className="flex items-center gap-2">
+          <Link href={`/app/tenants/${tenant.id}/edit`}>
+            <Button size="sm" variant="outline" className="gap-1.5">
+              <Edit className="h-4 w-4" />
+              Edit
+            </Button>
+          </Link>
+          <Button
+            size="sm"
+            variant="destructive"
+            loading={isDeleting}
+            onClick={() => {
+              if (window.confirm('Delete this tenant? This cannot be undone.')) deleteTenant()
+            }}
+          >
+            Delete
           </Button>
-        </Link>
+        </div>
       </div>
 
       {/* Profile hero */}

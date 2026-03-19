@@ -29,4 +29,8 @@ export const tenantsEndpoints = {
     const res = await apiClient.patch(`/tenants/${id}`, payload)
     return unwrapApiResponse<ApiTenant>(res.data)
   },
+
+  delete: async (id: string): Promise<void> => {
+    await apiClient.delete(`/tenants/${id}`)
+  },
 }

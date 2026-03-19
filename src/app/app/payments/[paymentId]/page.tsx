@@ -1,9 +1,11 @@
 'use client'
 
 import { use } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft, CreditCard, DollarSign } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { paymentsEndpoints } from '@/lib/api/endpoints/payments'
 import { PageHeader } from '@/components/shared/page-header'
 import { KpiCard } from '@/components/shared/kpi-card'
@@ -28,10 +30,22 @@ export default function PaymentDetailPage({
   params: Promise<{ paymentId: string }>
 }) {
   const { paymentId } = use(params)
+  const router = useRouter()
+  const queryClient = useQueryClient()
 
   const { data, isLoading } = useQuery({
     queryKey: ['app-payment', paymentId],
     queryFn: () => paymentsEndpoints.get(paymentId),
+  })
+
+  const { mutate: deletePayment, isPending: isDeleting } = useMutation({
+    mutationFn: () => paymentsEndpoints.delete(paymentId),
+    onSuccess: () => {
+      toast.success('Payment deleted')
+      queryClient.invalidateQueries({ queryKey: ['payments'] })
+      router.push('/app/payments')
+    },
+    onError: () => toast.error('Failed to delete payment'),
   })
 
   const payment: ApiPayment | undefined = data?.data
@@ -62,11 +76,23 @@ export default function PaymentDetailPage({
           title="Payment"
           description={`Ref: ${payment.reference}`}
           actions={
-            payment.unallocated > 0 && (
-              <span className="inline-flex items-center rounded-md bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
-                {formatCurrency(payment.unallocated)} unallocated
-              </span>
-            )
+            <div className="flex items-center gap-2">
+              {payment.unallocated > 0 && (
+                <span className="inline-flex items-center rounded-md bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                  {formatCurrency(payment.unallocated)} unallocated
+                </span>
+              )}
+              <Button
+                variant="destructive"
+                size="sm"
+                loading={isDeleting}
+                onClick={() => {
+                  if (window.confirm('Delete this payment? Allocations will also be removed. This cannot be undone.')) deletePayment()
+                }}
+              >
+                Delete
+              </Button>
+            </div>
           }
         />
       </div>

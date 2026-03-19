@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { usePropertyStore } from '@/store/property'
 import { ArrowLeft, Building2, Check, Copy, Home, Users } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { propertiesEndpoints } from '@/lib/api/endpoints/properties'
 import { PageHeader } from '@/components/shared/page-header'
@@ -23,6 +24,7 @@ export default function AppPropertyDetailPage({
   params: Promise<{ propertyId: string }>
 }) {
   const { propertyId } = use(params)
+  const router = useRouter()
   const queryClient = useQueryClient()
   const setCurrentProperty = usePropertyStore(s => s.setCurrentProperty)
   const [activeStatus, setActiveStatus] = useState<'active' | 'inactive'>('active')
@@ -47,6 +49,19 @@ export default function AppPropertyDetailPage({
   const property: ApiProperty | undefined = data?.data
   const derivedStatus: 'active' | 'inactive' | 'maintenance' =
     property?.status ?? (property?.active === false ? 'inactive' : 'active')
+
+  const { mutate: deleteProperty, isPending: isDeleting } = useMutation({
+    mutationFn: () => propertiesEndpoints.delete(propertyId),
+    onSuccess: () => {
+      toast.success('Property deleted')
+      queryClient.invalidateQueries({ queryKey: ['app-properties'] })
+      queryClient.invalidateQueries({ queryKey: ['properties'] })
+      router.push('/app/properties')
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage(error))
+    },
+  })
 
   const { mutate: updateStatus, isPending: isUpdatingStatus } = useMutation({
     mutationFn: () =>
@@ -121,6 +136,16 @@ export default function AppPropertyDetailPage({
                 onClick={() => setCurrentProperty(property.id)}
               >
                 Set as active
+              </Button>
+              <Button
+                size="sm"
+                variant="destructive"
+                loading={isDeleting}
+                onClick={() => {
+                  if (window.confirm('Delete this property? All associated data will be removed. This cannot be undone.')) deleteProperty()
+                }}
+              >
+                Delete
               </Button>
             </div>
           }

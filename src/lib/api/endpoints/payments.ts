@@ -23,4 +23,8 @@ export const paymentsEndpoints = {
     const res = await apiClient.post('/payments', payload)
     return unwrapApiResponse<ApiPayment>(res.data)
   },
+
+  delete: async (id: string): Promise<void> => {
+    await apiClient.delete(`/payments/${id}`)
+  },
 }

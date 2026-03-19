@@ -52,4 +52,8 @@ export const propertiesEndpoints = {
       throw error
     }
   },
+
+  delete: async (id: string): Promise<void> => {
+    await apiClient.delete(`/properties/${id}`)
+  },
 }

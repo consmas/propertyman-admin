@@ -29,4 +29,8 @@ export const invoicesEndpoints = {
     const res = await apiClient.patch(`/invoices/${id}`, payload)
     return unwrapApiResponse<ApiInvoice>(res.data)
   },
+
+  delete: async (id: string): Promise<void> => {
+    await apiClient.delete(`/invoices/${id}`)
+  },
 }

@@ -4,6 +4,7 @@ import { use } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft, Clock, Wrench } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { maintenanceEndpoints } from '@/lib/api/endpoints/maintenance'
 import { PageHeader } from '@/components/shared/page-header'
@@ -37,6 +38,7 @@ export default function MaintenanceDetailPage({
   params: Promise<{ maintenanceId: string }>
 }) {
   const { maintenanceId } = use(params)
+  const router = useRouter()
   const queryClient = useQueryClient()
 
   const { data, isLoading } = useQuery({
@@ -45,6 +47,16 @@ export default function MaintenanceDetailPage({
   })
 
   const request: ApiMaintenanceRequest | undefined = data?.data
+
+  const { mutate: deleteRequest, isPending: isDeleting } = useMutation({
+    mutationFn: () => maintenanceEndpoints.delete(maintenanceId),
+    onSuccess: () => {
+      toast.success('Request deleted')
+      queryClient.invalidateQueries({ queryKey: ['app-maintenance'] })
+      router.push('/app/maintenance')
+    },
+    onError: () => toast.error('Failed to delete request'),
+  })
 
   const { mutate: updateStatus, isPending } = useMutation({
     mutationFn: (status: MaintenanceStatus) =>
@@ -89,6 +101,16 @@ export default function MaintenanceDetailPage({
             <div className="flex items-center gap-2">
               <StatusBadge status={request.priority} type="maintenance_priority" />
               <StatusBadge status={request.status} type="maintenance" />
+              <Button
+                variant="destructive"
+                size="sm"
+                loading={isDeleting}
+                onClick={() => {
+                  if (window.confirm('Delete this maintenance request? This cannot be undone.')) deleteRequest()
+                }}
+              >
+                Delete
+              </Button>
             </div>
           }
         />

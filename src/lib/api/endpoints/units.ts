@@ -36,21 +36,12 @@ export const unitsEndpoints = {
   },
 
   bulkCreate: async (payload: BulkCreateUnitRequest): Promise<ApiResponse<ApiUnit[]>> => {
-    const normStatus = (s: string) => {
-      if (s === 'available') return 'vacant'
-      if (s === 'unavailable') return 'reserved'
-      return s
-    }
-    const normalized = {
-      ...payload,
-      units: payload.units.map((u) => ({ ...u, status: normStatus(u.status) })),
-    }
     try {
-      const res = await apiClient.post('/units/bulk_create', normalized)
+      const res = await apiClient.post('/units/bulk_create', payload)
       return unwrapApiResponse<ApiUnit[]>(res.data)
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 404) {
-        const res = await apiClient.post(`/properties/${payload.property_id}/units/bulk_create`, normalized)
+        const res = await apiClient.post(`/properties/${payload.property_id}/units/bulk_create`, payload)
         return unwrapApiResponse<ApiUnit[]>(res.data)
       }
       throw error
@@ -58,39 +49,22 @@ export const unitsEndpoints = {
   },
 
   update: async (id: string, payload: UpdateUnitRequest): Promise<ApiResponse<ApiUnit>> => {
-    const normalizeLegacyStatus = (status: string | undefined) => {
-      if (status === 'available') return 'vacant'
-      if (status === 'unavailable') return 'reserved'
-      return status
-    }
-
     try {
       const res = await apiClient.patch(`/units/${id}`, payload)
       return unwrapApiResponse<ApiUnit>(res.data)
     } catch (error) {
       if (!axios.isAxiosError(error)) throw error
 
-      // Some deployments expose nested routes for updates.
       if (error.response?.status === 404 && payload.unit?.property_id) {
         const res = await apiClient.patch(`/properties/${payload.unit.property_id}/units/${id}`, payload)
         return unwrapApiResponse<ApiUnit>(res.data)
       }
 
-      // Legacy status enums may still be expected by some deployments.
-      if (error.response?.status === 422 && payload.unit?.status) {
-        const legacyStatus = normalizeLegacyStatus(payload.unit.status)
-        if (legacyStatus !== payload.unit.status) {
-          const res = await apiClient.patch(`/units/${id}`, {
-            unit: {
-              ...payload.unit,
-              status: legacyStatus,
-            },
-          })
-          return unwrapApiResponse<ApiUnit>(res.data)
-        }
-      }
-
       throw error
     }
+  },
+
+  delete: async (id: string): Promise<void> => {
+    await apiClient.delete(`/units/${id}`)
   },
 }

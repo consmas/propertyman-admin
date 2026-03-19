@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -29,6 +29,7 @@ type ItemValues = z.infer<typeof itemSchema>
 
 function InvoiceDetailInner() {
   const params = useParams<{ id: string }>()
+  const router = useRouter()
   const queryClient = useQueryClient()
   const [serverError, setServerError] = useState<string | null>(null)
 
@@ -86,6 +87,16 @@ function InvoiceDetailInner() {
     onError: (error) => setServerError(getErrorMessage(error)),
   })
 
+  const deleteInvoice = useMutation({
+    mutationFn: () => invoicesEndpoints.delete(params.id),
+    onSuccess: () => {
+      toast.success('Invoice deleted')
+      queryClient.invalidateQueries({ queryKey: ['invoices'] })
+      router.push('/app/invoices')
+    },
+    onError: (error) => setServerError(getErrorMessage(error)),
+  })
+
   if (invoiceQuery.isLoading) return <PageLoader />
   if (invoiceQuery.isError || !invoiceQuery.data?.data) return <ErrorState message="Failed to load invoice" onRetry={() => invoiceQuery.refetch()} />
 
@@ -94,7 +105,24 @@ function InvoiceDetailInner() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={`Invoice ${invoice.invoice_number}`} description={`${invoice.invoice_type} • ${invoice.status}`} actions={<Link href={`/app/invoices/${invoice.id}/edit`}><Button>Edit</Button></Link>} />
+      <PageHeader
+        title={`Invoice ${invoice.invoice_number}`}
+        description={`${invoice.invoice_type} • ${invoice.status}`}
+        actions={
+          <div className="flex items-center gap-2">
+            <Link href={`/app/invoices/${invoice.id}/edit`}><Button variant="outline">Edit</Button></Link>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (window.confirm('Delete this invoice? This cannot be undone.')) deleteInvoice.mutate()
+              }}
+              loading={deleteInvoice.isPending}
+            >
+              Delete
+            </Button>
+          </div>
+        }
+      />
 
       <Card className="p-6 grid grid-cols-1 gap-2 text-sm md:grid-cols-2">
         <p>Issued: {formatDate(invoice.issue_date)}</p>

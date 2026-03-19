@@ -13,26 +13,29 @@ const APK_URL = 'https://propertyapi.rohodev.com/downloads/rentwise.apk'
 
 // ─── Install Banner ──────────────────────────────────────────────────────────
 
-function InstallBanner() {
+function InstallBanner({ onVisibilityChange }: { onVisibilityChange: (v: boolean) => void }) {
   const [deferredPrompt, setDeferredPrompt] = useState<Event & { prompt: () => void } | null>(null)
   const [visible, setVisible] = useState(false)
+
+  const dismiss = () => { setVisible(false); onVisibilityChange(false) }
 
   useEffect(() => {
     const handler = (e: Event) => {
       e.preventDefault()
       setDeferredPrompt(e as Event & { prompt: () => void })
       setVisible(true)
+      onVisibilityChange(true)
     }
     window.addEventListener('beforeinstallprompt', handler)
     return () => window.removeEventListener('beforeinstallprompt', handler)
-  }, [])
+  }, [onVisibilityChange])
 
   if (!visible) return null
 
   return (
     <div style={{
       position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999,
-      padding: '16px 20px 28px',
+      padding: '16px 20px calc(20px + env(safe-area-inset-bottom, 0px))',
       background: '#ffffff',
       borderTop: '1px solid #e8e7e4',
       boxShadow: '0 -8px 40px rgba(0,0,0,0.12)',
@@ -57,7 +60,7 @@ function InstallBanner() {
           </div>
         </div>
         <button
-          onClick={() => setVisible(false)}
+          onClick={dismiss}
           style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: '#9b9ba5' }}
           aria-label="Dismiss"
         >
@@ -68,7 +71,7 @@ function InstallBanner() {
       {/* Primary CTA — APK */}
       <a
         href={APK_URL}
-        onClick={() => setVisible(false)}
+        onClick={dismiss}
         className="rw-install-primary"
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
@@ -82,7 +85,7 @@ function InstallBanner() {
       {/* Secondary — PWA */}
       {deferredPrompt && (
         <button
-          onClick={() => { deferredPrompt.prompt(); setVisible(false) }}
+          onClick={() => { deferredPrompt.prompt(); dismiss() }}
           style={{
             height: 44, borderRadius: 14, border: '1.5px solid #e8e7e4',
             background: 'transparent', color: '#6b6b76', fontWeight: 600,
@@ -388,6 +391,7 @@ export default function TenantLanding() {
   const router = useRouter()
   const { isAuthenticated, isHydrated, login, isLoading: authLoading } = useAuth()
   const [view, setView] = useState<View>('landing')
+  const [bannerVisible, setBannerVisible] = useState(false)
 
   // Login form state
   const [loginData, setLoginData] = useState({ email: '', password: '' })
@@ -883,10 +887,14 @@ export default function TenantLanding() {
         }
       `}</style>
 
-      <InstallBanner />
+      <InstallBanner onVisibilityChange={setBannerVisible} />
       <div
         key={view}
-        style={{ fontFamily: 'var(--rw-body)', background: 'var(--rw-bg)', minHeight: '100vh' }}
+        style={{
+          fontFamily: 'var(--rw-body)', background: 'var(--rw-bg)', minHeight: '100vh',
+          paddingBottom: bannerVisible ? 'calc(200px + env(safe-area-inset-bottom, 0px))' : 0,
+          transition: 'padding-bottom 0.35s cubic-bezier(.4,0,.2,1)',
+        }}
       >
         {view === 'landing'  && LandingView()}
         {view === 'login'    && LoginView()}

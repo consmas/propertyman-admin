@@ -29,4 +29,8 @@ export const usersEndpoints = {
     const res = await apiClient.patch(`/users/${id}`, payload)
     return unwrapApiResponse<ApiUser>(res.data)
   },
+
+  delete: async (id: string): Promise<void> => {
+    await apiClient.delete(`/users/${id}`)
+  },
 }

@@ -45,4 +45,8 @@ export const maintenanceEndpoints = {
   ): Promise<ApiResponse<ApiMaintenanceRequest>> => {
     return maintenanceEndpoints.update(id, { maintenance_request: { status, notes } })
   },
+
+  delete: async (id: string): Promise<void> => {
+    await apiClient.delete(`/maintenance_requests/${id}`)
+  },
 }
