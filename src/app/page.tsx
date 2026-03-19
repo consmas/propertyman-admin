@@ -33,16 +33,26 @@ function InstallBanner({ onVisibilityChange }: { onVisibilityChange: (v: boolean
   if (!visible) return null
 
   return (
-    <div style={{
-      position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 9999,
-      padding: '16px 20px calc(20px + env(safe-area-inset-bottom, 0px))',
-      background: '#ffffff',
-      borderTop: '1px solid #e8e7e4',
-      boxShadow: '0 -8px 40px rgba(0,0,0,0.12)',
-      display: 'flex', flexDirection: 'column', gap: 12,
-      animation: 'rw-slideUp 0.35s cubic-bezier(.4,0,.2,1) both',
-    }}>
-      <style>{`@keyframes rw-slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }`}</style>
+    <>
+    <style>{`
+      @keyframes rw-slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+      .rw-banner {
+        position: fixed; bottom: 16px; right: 16px; left: 16px; z-index: 9999;
+        max-width: 420px; margin: 0 auto;
+        padding: 16px 18px 18px;
+        background: #ffffff;
+        border-radius: 20px;
+        border: 1px solid #e8e7e4;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.06);
+        display: flex; flex-direction: column; gap: 12px;
+        animation: rw-slideUp 0.35s cubic-bezier(.4,0,.2,1) both;
+      }
+      @media (max-width: 640px) {
+        .rw-banner { bottom: 0; left: 0; right: 0; max-width: 100%; border-radius: 20px 20px 0 0; border-bottom: none;
+          padding: 16px 18px calc(18px + env(safe-area-inset-bottom, 0px)); }
+      }
+    `}</style>
+    <div className="rw-banner">
 
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -96,6 +106,7 @@ function InstallBanner({ onVisibilityChange }: { onVisibilityChange: (v: boolean
         </button>
       )}
     </div>
+    </>
   )
 }
 
@@ -357,10 +368,10 @@ function AuthLayout({
 
       {/* Right form panel */}
       <div className="rw-form-panel" style={{
-        flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: '40px 24px', background: 'var(--rw-bg)', overflowY: 'auto',
+        flex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
+        padding: '40px 24px', background: 'var(--rw-bg)', overflowY: 'auto', minHeight: '100vh',
       }}>
-        <div className="rw-form-inner fade-up" style={{ width: '100%', maxWidth: 420 }}>
+        <div className="rw-form-inner fade-up" style={{ width: '100%', maxWidth: 420, paddingTop: 8, paddingBottom: 40 }}>
           <button onClick={onBack} style={{
             display: 'flex', alignItems: 'center', gap: 6, marginBottom: 32,
             background: 'none', border: 'none', cursor: 'pointer',
@@ -865,25 +876,28 @@ export default function TenantLanding() {
           .rw-auth-panel { display: none !important; }
         }
 
+        /* ── Tablet ──────────────────────────────── */
+        @media (max-width: 900px) {
+          .rw-form-panel { align-items: flex-start !important; }
+        }
+
         /* ── Mobile ─────────────────────────────── */
         @media (max-width: 640px) {
-          .rw-nav        { padding: 14px 20px !important; }
-          .rw-hero       { padding: 0 20px 40px !important; gap: 32px !important; }
+          .rw-nav        { padding: 14px 16px !important; }
+          .rw-hero       { padding: 0 16px 40px !important; gap: 32px !important; }
           .rw-phone      { display: none !important; }
           .rw-hero-text  { max-width: 100% !important; }
-          .rw-hero-h1    { font-size: 34px !important; }
-          .rw-hero-p     { font-size: 15px !important; }
-          .rw-stats      { gap: 20px !important; margin-top: 28px !important; }
-          .rw-download   { margin: 0 16px 36px !important; padding: 28px 20px !important; border-radius: 20px !important; }
+          .rw-hero-h1    { font-size: 30px !important; letter-spacing: -0.02em !important; }
+          .rw-hero-p     { font-size: 14px !important; margin-bottom: 24px !important; }
+          .rw-stats      { gap: 16px !important; margin-top: 24px !important; }
+          .rw-download   { margin: 0 12px 32px !important; padding: 24px 16px !important; border-radius: 18px !important; }
           .rw-dl-btns    { flex-direction: column !important; width: 100% !important; }
           .rw-dl-btns a  { justify-content: center !important; }
-          .rw-footer     { padding: 20px !important; flex-direction: column !important; align-items: flex-start !important; gap: 16px !important; }
-          .rw-reg-grid   { grid-template-columns: 1fr !important; }
-          .rw-form-panel { padding: 28px 20px 40px !important; }
-          .rw-form-inner { max-width: 100% !important; }
-          .rw-btn-lg     { padding: 13px 20px !important; font-size: 14px !important; }
-          .rw-install-primary span { display: none; }
-          .rw-install-primary::after { content: 'Download APK'; }
+          .rw-footer     { padding: 16px !important; flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
+          .rw-reg-grid   { grid-template-columns: 1fr !important; gap: 0 !important; }
+          .rw-form-panel { padding: 20px 16px 32px !important; align-items: flex-start !important; }
+          .rw-form-inner { max-width: 100% !important; padding-top: 4px !important; }
+          .rw-btn-lg     { padding: 12px 18px !important; font-size: 14px !important; width: 100% !important; justify-content: center !important; }
         }
       `}</style>
 
