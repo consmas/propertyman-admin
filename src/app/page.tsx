@@ -11,6 +11,72 @@ import { LogoMark, LogoLockup, LogoLockupDark } from '@/components/shared/logo'
 
 const APK_URL = 'https://propertyapi.rohodev.com/downloads/rentwise.apk'
 
+// ─── iOS Install Banner ───────────────────────────────────────────────────────
+
+function IOSInstallBanner() {
+  const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+    const isStandalone =
+      ('standalone' in navigator && (navigator as { standalone?: boolean }).standalone === true) ||
+      window.matchMedia('(display-mode: standalone)').matches
+    const dismissed = sessionStorage.getItem('ios_banner_dismissed')
+    if (isIOS && !isStandalone && !dismissed) setVisible(true)
+  }, [])
+
+  if (!visible) return null
+
+  const dismiss = () => {
+    sessionStorage.setItem('ios_banner_dismissed', '1')
+    setVisible(false)
+  }
+
+  return (
+    <>
+      <style>{`
+        @keyframes ios-slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .ios-banner {
+          position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+          background: #fff; border-top: 1px solid #e8e7e4;
+          padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0px));
+          box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+          animation: ios-slideUp 0.3s cubic-bezier(.4,0,.2,1) both;
+          display: flex; flex-direction: column; gap: 12px;
+        }
+      `}</style>
+      <div className="ios-banner">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{
+              width: 40, height: 40, borderRadius: 10, flexShrink: 0,
+              background: 'linear-gradient(135deg, #c2703e, #a35a2d)',
+              display: 'grid', placeItems: 'center',
+            }}>
+              <LogoMark size={22} color="#fff" />
+            </div>
+            <div>
+              <p style={{ fontSize: 14, fontWeight: 700, color: '#1a1a1f', lineHeight: 1.2 }}>Add RentWise to Home Screen</p>
+              <p style={{ fontSize: 12, color: '#9b9ba5', fontWeight: 500, marginTop: 2 }}>Access it like a native app</p>
+            </div>
+          </div>
+          <button onClick={dismiss} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 6, color: '#9b9ba5' }} aria-label="Dismiss">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', borderRadius: 12, background: '#f6f5f2', fontSize: 13, color: '#4a4a55', fontWeight: 500 }}>
+          <span>Tap</span>
+          {/* Safari share icon */}
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#007AFF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
+            <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/>
+          </svg>
+          <span>then <strong style={{ color: '#1a1a1f' }}>"Add to Home Screen"</strong></span>
+        </div>
+      </div>
+    </>
+  )
+}
+
 // ─── Icons ──────────────────────────────────────────────────────────────────
 
 const EyeIcon = ({ open }: { open: boolean }) => (
@@ -801,6 +867,7 @@ export default function TenantLanding() {
         }
       `}</style>
 
+      <IOSInstallBanner />
       <div
         key={view}
         style={{
