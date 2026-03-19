@@ -20,27 +20,32 @@ const jetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
 });
 
+const OG_TITLE = 'Welcome to RentWise'
+const OG_DESCRIPTION =
+  'RentWise is the smarter way to be a tenant. Pay rent instantly, get notified the moment an invoice drops, log and track maintenance requests in real time, review your lease and payment history anytime, and manage your entire home — all from one beautifully simple dashboard. Available on web and Android.'
+
 export const metadata: Metadata = {
   title: {
     default: 'RentWise — Tenant Portal',
     template: '%s | RentWise',
   },
-  description: 'Pay rent, track maintenance requests, and manage your home — all from one beautiful dashboard.',
+  description: OG_DESCRIPTION,
   applicationName: 'RentWise',
-  keywords: ['rent', 'tenant portal', 'property management', 'maintenance', 'invoices', 'lease'],
+  keywords: ['rent', 'tenant portal', 'pay rent online', 'property management', 'maintenance requests', 'lease management', 'invoices', 'rental app'],
   authors: [{ name: 'RentWise' }],
   creator: 'RentWise',
   metadataBase: new URL('https://propertyapi.rohodev.com'),
   openGraph: {
     type: 'website',
-    title: 'RentWise — Tenant Portal',
-    description: 'Pay rent, track maintenance requests, and manage your home — all from one beautiful dashboard.',
+    title: OG_TITLE,
+    description: OG_DESCRIPTION,
     siteName: 'RentWise',
+    locale: 'en_US',
   },
   twitter: {
-    card: 'summary',
-    title: 'RentWise — Tenant Portal',
-    description: 'Pay rent, track maintenance requests, and manage your home — all from one beautiful dashboard.',
+    card: 'summary_large_image',
+    title: OG_TITLE,
+    description: OG_DESCRIPTION,
   },
   icons: {
     icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
