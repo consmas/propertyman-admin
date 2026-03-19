@@ -75,6 +75,7 @@ export default function RootLayout({
                   var isDark = setting === 'dark' || (setting === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
                   document.documentElement.dataset.theme = isDark ? 'dark' : 'light';
                 } catch (_) {}
+                window.addEventListener('beforeinstallprompt', function(e) { e.preventDefault(); });
               })();
             `,
           }}
