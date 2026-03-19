@@ -256,7 +256,7 @@ function AuthLayout({
               <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)', fontWeight: 600 }}>Prefer the app?</div>
               <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>Download Rentwise for Android</div>
             </div>
-            <a href="https://propertyapi.rohodev.com/downloads/app-release.apk" style={{
+            <a href="https://propertyapi.rohodev.com/downloads/rentwise.apk" style={{
               marginLeft: 'auto', padding: '7px 14px', borderRadius: 10,
               background: 'rgba(255,255,255,0.12)', color: '#fff',
               fontSize: 12, fontWeight: 700, textDecoration: 'none',
@@ -499,7 +499,7 @@ export default function TenantLanding() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: 14, position: 'relative', zIndex: 1, flexWrap: 'wrap' }}>
-          <a href="https://propertyapi.rohodev.com/downloads/app-release.apk" style={{
+          <a href="https://propertyapi.rohodev.com/downloads/rentwise.apk" style={{
             display: 'flex', alignItems: 'center', gap: 12, padding: '14px 28px',
             background: 'rgba(255,255,255,0.08)', borderRadius: 16, textDecoration: 'none',
             border: '1px solid rgba(255,255,255,0.1)', backdropFilter: 'blur(8px)', color: '#fff',
@@ -510,7 +510,7 @@ export default function TenantLanding() {
               <div style={{ fontSize: 16, fontWeight: 700, fontFamily: 'var(--rw-display)', letterSpacing: '-0.01em' }}>Google Play</div>
             </div>
           </a>
-          <a href="https://propertyapi.rohodev.com/downloads/app-release.apk" style={{
+          <a href="https://propertyapi.rohodev.com/downloads/rentwise.apk" style={{
             display: 'flex', alignItems: 'center', gap: 10, padding: '14px 24px',
             background: 'var(--rw-accent)', borderRadius: 16, textDecoration: 'none',
             color: '#fff', fontWeight: 700, fontSize: 14,
@@ -573,7 +573,7 @@ export default function TenantLanding() {
         )}
 
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 24, marginTop: -6 }}>
-          <a href="https://propertyapi.rohodev.com/downloads/app-release.apk" style={{ fontSize: 13, fontWeight: 600, color: 'var(--rw-accent)', textDecoration: 'none' }}>Forgot password?</a>
+          <a href="https://propertyapi.rohodev.com/downloads/rentwise.apk" style={{ fontSize: 13, fontWeight: 600, color: 'var(--rw-accent)', textDecoration: 'none' }}>Forgot password?</a>
         </div>
 
         <button type="submit" className="rw-btn-primary rw-btn-full" style={{ height: 52, fontSize: 15, marginBottom: 20, gap: 8 }} disabled={authLoading}>
