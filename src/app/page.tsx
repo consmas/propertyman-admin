@@ -13,22 +13,21 @@ const APK_URL = 'https://propertyapi.rohodev.com/downloads/rentwise.apk'
 
 // ─── Install Banner ──────────────────────────────────────────────────────────
 
-function InstallBanner({ onVisibilityChange }: { onVisibilityChange: (v: boolean) => void }) {
+function InstallBanner() {
   const [deferredPrompt, setDeferredPrompt] = useState<Event & { prompt: () => void } | null>(null)
   const [visible, setVisible] = useState(false)
 
-  const dismiss = () => { setVisible(false); onVisibilityChange(false) }
+  const dismiss = () => setVisible(false)
 
   useEffect(() => {
     const handler = (e: Event) => {
       e.preventDefault()
       setDeferredPrompt(e as Event & { prompt: () => void })
       setVisible(true)
-      onVisibilityChange(true)
     }
     window.addEventListener('beforeinstallprompt', handler)
     return () => window.removeEventListener('beforeinstallprompt', handler)
-  }, [onVisibilityChange])
+  }, [])
 
   if (!visible) return null
 
@@ -402,7 +401,6 @@ export default function TenantLanding() {
   const router = useRouter()
   const { isAuthenticated, isHydrated, login, isLoading: authLoading } = useAuth()
   const [view, setView] = useState<View>('landing')
-  const [bannerVisible, setBannerVisible] = useState(false)
 
   // Login form state
   const [loginData, setLoginData] = useState({ email: '', password: '' })
@@ -901,13 +899,11 @@ export default function TenantLanding() {
         }
       `}</style>
 
-      <InstallBanner onVisibilityChange={setBannerVisible} />
+      <InstallBanner />
       <div
         key={view}
         style={{
           fontFamily: 'var(--rw-body)', background: 'var(--rw-bg)', minHeight: '100vh',
-          paddingBottom: bannerVisible ? 'calc(200px + env(safe-area-inset-bottom, 0px))' : 0,
-          transition: 'padding-bottom 0.35s cubic-bezier(.4,0,.2,1)',
         }}
       >
         {view === 'landing'  && LandingView()}
